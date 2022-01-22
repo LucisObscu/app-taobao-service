@@ -44,8 +44,9 @@ class Naver_Product(models.Model):
     three_day = models.IntegerField()
     six_mon = models.IntegerField()
     review = models.IntegerField()
-    review_score = models.FloatField()
-    
+    review_score = models.CharField(max_length=(100))
+
+
 class Sourcing(models.Model):
     org_title = models.CharField(max_length=(300))
     tag = models.CharField(max_length=(300))
