@@ -421,6 +421,9 @@ def naver_all_upload(request):
                         dt[i]["date"] = datetime.strptime(dt[i]["date"], '%Y-%m-%d %H:%M:%S')
                         dt[i]["admin_email"] = email
                     for i in dt:
+                        print('===============')
+                        print(i)
+                        print('===============')
                         Naver_Product.objects.create(admin_email=admin_email,title=i['title'], price=i['price'], delivery=i['delivery'], price_sum_delivery=i['price_sum_delivery'],
                                                      org_thumbnail=i['org_thumbnail'],sub_thumbnail=i['sub_thumbnail'], img_detailed=i['img_detailed'],cannel_id=i['cannel_id'],
                                                      product_id=int(i['product_id']), date=i['date'], img_width=i['img_width'],img_height=i['img_height'], six_mon=i['six_mon'],
