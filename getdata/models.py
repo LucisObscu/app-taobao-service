@@ -37,7 +37,7 @@ class Naver_Product(models.Model):
     sub_thumbnail = models.CharField(max_length=(2000))
     img_detailed = models.CharField(max_length=(2000))
     cannel_id = models.CharField(max_length=(100))
-    product_id = models.IntegerField()
+    product_id = models.CharField(max_length=(320))
     date = models.DateField()
     img_width = models.IntegerField()
     img_height = models.IntegerField()
