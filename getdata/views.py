@@ -20,20 +20,8 @@ class DateTimeEncoder(json.JSONEncoder):
         encoded_object = str(obj)
         return encoded_object
 import math
-'''
-class SourcingSet(viewsets.ModelViewSet):
-    queryset = Sourcing.objects.all()
-    serializer_class = SourcingSerializer
+import traceback
 
-
-class Sourcing_ProductSet(viewsets.ModelViewSet):
-    queryset = Sourcing_Product.objects.all()
-    serializer_class = Sourcing_ProductSerializer
-    
-class Sourcing_OptionSet(viewsets.ModelViewSet):
-    queryset = Sourcing_Option.objects.all()
-    serializer_class = Sourcing_OptionSerializer   
-'''
 
 def sum_pk(pk_data):
     data = pk_data['fields']
@@ -47,14 +35,14 @@ def sourcing_delect(request):
         "code": 200,
         "msg":"업로드 완료",
     }
+    admin_email = request.session['admin_email']
     dt = json.loads(request.body.decode('utf-8'))
-    for sourcing in dt:
-        Sourcing.objects.get(id = sourcing['pk']).delete() 
-        
-    
-    
+    Sourcing.objects.filter(id__in = [i['pk'] for i in dt],admin_email=admin_email).delete() 
     
     return HttpResponse(json.dumps(data), content_type = "application/json")
+
+
+
 def sourcing_update(request):
     data = {
         "code": 200,
@@ -123,7 +111,7 @@ def get_sourcing_data(one_sourcing):
     sourcing_op_deep_ctg = [sum_pk(i) for i in json.loads(serializers.serialize("json", Sourcing_Option_Deep_Category.objects.filter(sourcing_id=one_sourcing)))]
     main_img = [sum_pk(i) for i in json.loads(serializers.serialize("json", Main_Images.objects.filter(sourcing_id=one_sourcing)))]
     cont_img = [sum_pk(i) for i in json.loads(serializers.serialize("json", Content_Images.objects.filter(sourcing_id=one_sourcing)))]
-    return {'sourcing':sourcing,'sourcing_pr':sourcing_pr,'sourcing_op_ctg':sourcing_op_ctg,'sourcing_op_deep_ctg':sourcing_op_deep_ctg,'cont_img':cont_img}
+    return {'sourcing':sourcing,'sourcing_pr':sourcing_pr,'sourcing_op_ctg':sourcing_op_ctg,'sourcing_op_deep_ctg':sourcing_op_deep_ctg,'cont_img':cont_img,'main_img':main_img}
     
 
 def sourcing_product_delete(request):
@@ -177,7 +165,9 @@ def sourcing_product_upload(request):
                                     margin=10, weightPrice=6000,weight=1, memo='', brand='기타')
     for i in data['main_imgs']:
         Main_Images.objects.create(sourcing_id=one, src=i)
-        
+    for i in data['detail_imgs']:
+        Content_Images.objects.create(sourcing_id=one, src=i)
+    
     for i in data['sku_props']:
         pid = i['pid']
         ctg_name = i['prop_name']
@@ -411,20 +401,40 @@ def manager_update(request):
     return HttpResponse(json.dumps(data), content_type = "application/json")    
 
 def naver_all_upload(request):
-    dt = json.loads(request.body.decode('utf-8'))
-    
-    email = request.session['admin_email']
-    
-    for i,v in enumerate(dt):
-        dt[i]["date"] = datetime.strptime(dt[i]["date"], '%Y-%m-%d %H:%M:%S')
-        dt[i]["admin_email"] = email
-    for i in dt:
-        Naver_Product.objects.create(**i)
-    
     data = {
         "code": 200,
-        "msg":"업로드 완료"
+        "msg": "업로드 완료"
     }
+    lst2 = ['title', 'price', 'delivery', 'price_sum_delivery', 'org_thumbnail', 'sub_thumbnail',
+            'img_detailed', 'cannel_id', 'product_id', 'date', 'img_width', 'img_height', 'three_day',
+            'six_mon', 'review', 'review_score']
+    try:
+        dt = json.loads(request.body.decode('utf-8'))
+        if dt != []:
+
+            if not set(lst2).difference(list(dt[0].keys())):
+                admin = request.session['admin']
+                email = request.session['email']
+                if admin:
+                    Naver_Product.objects.filter(admin_email=email).delete()
+                    for i,v in enumerate(dt):
+                        dt[i]["date"] = datetime.strptime(dt[i]["date"], '%Y-%m-%d %H:%M:%S')
+                        dt[i]["admin_email"] = email
+                    for i in dt:
+                        Naver_Product.objects.create(**i)
+                else:
+                    data["code"] = 201
+                    data["msg"] = "관리자 권한이 없습니다"
+            else:
+                data["code"] = 204
+                data["msg"] = "잘못된 데이터 입니다."
+        else:
+            data["code"] = 202
+            data["msg"] = "데이터가 비어있습니다"
+    except:
+        data["code"] = 203
+        data["msg"] = "로그인을 다시 시도해 주세요"
+
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
@@ -505,9 +515,7 @@ def login(request):
     
     dt = json.loads(request.body.decode('utf-8'))
     data = {'email':dt['email'],'password':dt['password']}
-    req = requests.post('https://tsnullp.herokuapp.com/seller/login',data=data)
-
-    text = req.json()
+    text = dt['login_data']
     if text['code'] == 'SUCCESS':
         email = text['data']['email']
         nickname = text['data']['nickname']
@@ -563,12 +571,12 @@ def login(request):
                         pass
                 
                 print('새로 작원 계정 등록')
-                #새로 작원 계정 등록
-                for user in m_text['data']:
-                    u_email = user['email']
-                    u_nickname = user['nickname']
-                    if u_email not in m_email_list:
-                        User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False)
+                if m_text['code'] == 'SUCCESS':
+                    for user in m_text['data']:
+                        u_email = user['email']
+                        u_nickname = user['nickname']
+                        if u_email not in m_email_list:
+                            User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False)
                 text['message'] = '로그인 성고'
                 text['user_list'] = serializers.serialize("json", User_Info.objects.filter(admin_email=m_email))
                 text['setting'] = model_to_dict(User_Info.objects.get(email=m_email))
@@ -615,12 +623,154 @@ def login(request):
     
     
     
+def get_options(sourcing_pr,existent_op_data,rate,tax):
+    options = []
+    for op in existent_op_data:
+        option = {"key":"","image":"","value":[],"korValue":[],"price":"","productPrice":0,"salePrice":0,"stock":0,"margin":0,"weightPrice":0}
+        deep_op = op["deep_op"]
+        option["key"] = deep_op["ids"]
+        
+        option["price"] = str(deep_op["sale_price"])
+        option["stock"] = int(deep_op["stock"])
+        for i in op["op_list"]:
+            if i["image"]:
+                option["image"] = i["image"]
+            if i["name"]:
+                option["value"].append(i["name"])
+            if i["korTypeName"]:
+                option["korValue"].append(i["korTypeName"])
+        option["value"] = " + ".join(option["value"])
+        option["korValue"] = " + ".join(option["korValue"])
+        
+        option["margin"] = sourcing_pr["margin"]
+        option["weightPrice"] = sourcing_pr["weightPrice"]
+        option["productPrice"] = math.ceil(math.ceil((((rate*deep_op["origin_price"])/((100-sourcing_pr["margin"])*0.01))*tax)+sourcing_pr["weightPrice"])*0.1)*10
+        sale_price = deep_op["sale_price"]
+        option["salePrice"] =  math.ceil(math.ceil((((rate*sale_price)/((100-sourcing_pr["margin"])*0.01))*tax)+sourcing_pr["weightPrice"])*0.1)*10
+        options.append(option)
+    return options
+
+
+def get_prop(ds):
+    prop = []
+    for key,val in ds.items():
+        op = {"pid":"","name":"","korTypeName":"","values":[]}
+        for i in val:
+            op["pid"] = i["pid"]
+            op["name"] = i["ctg_name"]
+            op["korTypeName"] = i["ctg_korTypeName"]
+            op["values"].append({"vid":i["vid"],"name":i["name"],
+                                "korValueName":i["korTypeName"],"image":i["image"]})
+        prop.append(op)
+    return prop    
+
+def get_existent_op_data(sourcing_op_ctg,sourcing_op_deep_ctg,ds):
+    existent_op_data = []
+    if sourcing_op_ctg:
+        op_data = [ds[i] for i in ds.keys()]      
+        select_data = {}
+        for i in op_data:
+            for j in i:
+                if j["select"]:
+                    key = "{0}:{1}".format(j["pid"], j["vid"])
+                    select_data[key] = j
+        for i in sourcing_op_deep_ctg:
+            ids_list = [j.strip() for j in i["ids"].split(";")]
+            top = len(ids_list)
+            op_list = []
+            for k in ids_list:
+                try:
+                    op_list.append(select_data[k])
+                except:
+                    break
+            if top == len(op_list):
+                existent_op_data.append({"deep_op":i,"op_list":op_list})
+    else:
+        existent_op_data = []
+        for i in sourcing_op_deep_ctg:
+            existent_op_data.append({"deep_op":i,"op_list":[]})
+    return existent_op_data        
     
     
     
+def seller_up_load(request):
+    data = {
+        "code": 200,
+        "msg":"업로드 완료",
+    }
+    email = request.session["email"]
+    admin_email = request.session["admin_email"]
+    dt = json.loads(request.body.decode("utf-8"))
     
-    
-    
+    deep_key = {"{0}-{1}".format(i["cannel_id"],i["product_id"]): i["num"] for i in dt}
+    one_list = Sourcing.objects.filter(id__in = [i["pk"] for i in dt],admin_email=admin_email)
+    up_one_list = []
+    for one in one_list:
+        if one.status == 1 or one.status == 3:
+            up_one_list.append(one)
+
+
+    rate = float(requests.get("https://tsnullp.herokuapp.com/seller/getExchangeRate").json()["data"]["exchange"])
+    one = User_Info.objects.get(email=admin_email,admin_email=admin_email)
+    tax = one.tax
+    update_list = []
+    for one in up_one_list:
+        try:
+            i = get_sourcing_data(one)
+            sourcing_pr = i["sourcing_pr"][0]
+            sourcing_op_ctg = i["sourcing_op_ctg"]
+            sourcing_op_deep_ctg = i["sourcing_op_deep_ctg"]
+            sourcing = i["sourcing"][0]
+            main_img = i["main_img"]
+            cont_img = i["cont_img"]
+            ds = {}
+            for i in sourcing_op_ctg:
+                if i["select"]:
+                    try:
+                        ds[i["ctg_korTypeName"]].append(i)
+                    except:
+                        ds[i["ctg_korTypeName"]] = []
+                        ds[i["ctg_korTypeName"]].append(i)
+            prop = get_prop(ds)
+            existent_op_data = get_existent_op_data(sourcing_op_ctg,sourcing_op_deep_ctg,ds)
+            options = get_options(sourcing_pr,existent_op_data,rate,tax)
+            attributes = []
+            for i in prop:
+                for j in i["values"]:
+                    attributes.append({"attributeTypeName":i["korTypeName"],"attributeValueName":j["korValueName"]})
+            update = {"email":"","naverID":"","exchange":0,"url":"","brand":"",
+            "title":"","korTitle":"","mainImages":[],"content":[],"prop":"",
+            "options":"","attributes":"","isClothes":"","isShoes":""}
+            update["email"] = email
+            update["naverID"] = deep_key["{0}-{1}".format(sourcing["cannel_id"], sourcing["product_id"])]
+            update["exchange"] = rate
+            update["url"] = "https://item.taobao.com/item.htm?id={0}".format(sourcing["item_id"])
+            update["brand"] = "기타"
+            update["title"] = sourcing_pr["title"]
+            update["korTitle"] = sourcing["org_title"]
+            update["mainImages"] = [i["src"] for i in main_img]
+            update["content"] = [i["src"] for i in cont_img]
+            update["prop"] = prop
+            update["options"] = options
+            update["attributes"] = attributes
+            update["isClothes"] = "Y" if sourcing_pr["isClothes"] else "N"
+            update["isShoes"] = "Y" if sourcing_pr["isShoes"] else "N"
+            update_list.append(update)
+            headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+            req = requests.post('https://tsnullp.herokuapp.com/seller/product',data=json.dumps(update),headers=headers)
+            if req.status_code == 200:
+                jdata = req.json()
+                print(jdata)
+                if jdata["code"] == "SUCCESS":
+                    one.status = 2
+                else:
+                    one.status = 3
+            one.save()
+        except:
+            data["msg"] = traceback.format_exc()
+
+    data["data"] = update_list
+    return HttpResponse(json.dumps(data), content_type = "application/json")   
     
     
     

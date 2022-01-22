@@ -19,5 +19,5 @@ urlpatterns = [
     path('problem_set',views.problem_set,name="problem_set"),
     path('manager_update',views.manager_update,name="manager_update"),
     path('prohibition_list_get',views.prohibition_list_get,name="prohibition_list_get"),
-    
+    path('seller_up_load',views.seller_up_load,name="seller_up_load"),
 ]
