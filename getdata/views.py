@@ -422,7 +422,8 @@ def naver_all_upload(request):
                         dt[i]["admin_email"] = email
                     for i in dt:
                         print('===============')
-                        print(i)
+                        for k in i.keys():
+                            print('{0} : {1}'.format(k,i[k]))
                         print('===============')
 
                         Naver_Product.objects.create(admin_email=i['admin_email'],title=i['title'], price=i['price'], delivery=i['delivery'], price_sum_delivery=i['price_sum_delivery'],
