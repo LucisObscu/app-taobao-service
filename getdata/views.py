@@ -411,7 +411,6 @@ def naver_all_upload(request):
     try:
         dt = json.loads(request.body.decode('utf-8'))
         if dt != []:
-
             if not set(lst2).difference(list(dt[0].keys())):
                 admin = request.session['admin']
                 email = request.session['email']
@@ -434,7 +433,7 @@ def naver_all_upload(request):
     except:
         data["code"] = 203
         data["msg"] = "로그인을 다시 시도해 주세요"
-
+        data["msg"] = traceback.format_exc()
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
