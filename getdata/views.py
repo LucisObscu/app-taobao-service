@@ -651,8 +651,8 @@ def get_options(sourcing_pr,existent_op_data,rate,tax):
                 option["value"].append(i["name"])
             if i["korTypeName"]:
                 option["korValue"].append(i["korTypeName"])
-        option["value"] = " + ".join(option["value"])
-        option["korValue"] = " + ".join(option["korValue"])
+        option["value"] = "/".join(option["value"])
+        option["korValue"] = "/".join(option["korValue"])
         
         option["margin"] = sourcing_pr["margin"]
         option["weightPrice"] = sourcing_pr["weightPrice"]
