@@ -20,7 +20,7 @@ class User_Info(models.Model):
     problem_product = models.BooleanField(default = True)
     status = models.CharField(max_length=(50),default = '')
     jab = models.BooleanField(default = False)
-    margin = models.IntegerField(default = 0)
+    margin = models.IntegerField(default = 20)
 class Prohibition(models.Model):
     email = models.CharField(max_length=(320))
     admin_email = models.CharField(max_length=(320))

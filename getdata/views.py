@@ -550,14 +550,14 @@ def login(request):
                 if info == None:
                     print('등록이 되지 않으면')
                     #등록이 되지 않으면
-                    User_Info.objects.create(email=email, nickname=nickname,admin=True,admin_email=email,margin=20)
+                    User_Info.objects.create(email=email, nickname=nickname,admin=True,admin_email=email)
                     if m_text['code'] == 'SUCCESS':
                         print('직원 계정 등록')
                         #직원 계정 등록
                         for user in m_text['data']:
                             u_email = user['email']
                             u_nickname = user['nickname']
-                            User_Info.objects.create(email=u_email, nickname=u_nickname,admin=False,admin_email=email,margin=20)
+                            User_Info.objects.create(email=u_email, nickname=u_nickname,admin=False,admin_email=email)
                     text['message'] = '로그인 성공'
                     text['user_list'] = serializers.serialize("json", User_Info.objects.filter(admin_email=email))
                     text['setting'] = model_to_dict(User_Info.objects.get(email=email))
@@ -589,7 +589,7 @@ def login(request):
                             u_email = user['email']
                             u_nickname = user['nickname']
                             if u_email not in m_email_list:
-                                User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False,margin=20)
+                                User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False)
                     text['message'] = '로그인 성고'
                     text['user_list'] = serializers.serialize("json", User_Info.objects.filter(admin_email=m_email))
                     text['setting'] = model_to_dict(User_Info.objects.get(email=m_email))
