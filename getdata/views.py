@@ -528,7 +528,6 @@ def login(request):
     print(request.session.session_key)
     
     dt = json.loads(request.body.decode('utf-8'))
-    data = {'email':dt['email'],'password':dt['password']}
     text = dt['login_data']
     if text['code'] == 'SUCCESS':
         email = text['data']['email']
