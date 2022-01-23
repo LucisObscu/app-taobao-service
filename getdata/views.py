@@ -458,6 +458,7 @@ def setting_save(request):
         email = request.session['email']
         key = dt['key']
         tax = dt['tax']
+        margin = dt['margin']
         if Secret_Key.objects.filter(admin_email=admin_email):
             one = Secret_Key.objects.get(admin_email=admin_email)
             one.key = key
@@ -467,6 +468,7 @@ def setting_save(request):
         if User_Info.objects.filter(admin_email=admin_email,email=email):
            one = User_Info.objects.get(admin_email=admin_email,email=email)
            one.tax = tax
+           one.margin = margin
            one.save()
     
     data = {
