@@ -161,8 +161,12 @@ def sourcing_product_upload(request):
     except:
         pass
     one.save()
+    
+    user = User_Info.objects.get(admin_email=admin_email)
+    margin = user.margin
+    
     Sourcing_Product.objects.create(title=data['title'], sourcing_id=one, korTitle=data['ko_title'],
-                                    margin=10, weightPrice=6000,weight=1, memo='', brand='기타')
+                                    margin=margin, weightPrice=6000,weight=1, memo='', brand='기타')
     for i in data['main_imgs']:
         Main_Images.objects.create(sourcing_id=one, src=i)
     for i in data['detail_imgs']:
