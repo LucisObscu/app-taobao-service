@@ -317,7 +317,6 @@ def naver_page(request):
         data = {
             "code": 200,
             "msg":traceback.format_exc(),
-            "data":{'list':naver_list,'count':top,'cut':10,'page':page}
         }
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
