@@ -404,6 +404,16 @@ def manager_update(request):
     }
     return HttpResponse(json.dumps(data), content_type = "application/json")    
 
+
+
+def naver_all_delete(request):
+    data = {
+        "code": 200,
+        "msg": "삭제 완료"
+    }
+    admin_email = request.session['admin_email']
+    Naver_Product.objects.filter(admin_email=admin_email).delete()
+    return HttpResponse(json.dumps(data), content_type = "application/json")
 def naver_all_upload(request):
     data = {
         "code": 200,
@@ -420,7 +430,6 @@ def naver_all_upload(request):
                 email = request.session['email']
                 admin_email = request.session['admin_email']
                 if admin:
-                    Naver_Product.objects.filter(admin_email=admin_email).delete()
                     for i,v in enumerate(dt):
                         dt[i]["date"] = datetime.strptime(dt[i]["date"], '%Y-%m-%d %H:%M:%S')
                         dt[i]["admin_email"] = email
