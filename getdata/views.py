@@ -253,7 +253,7 @@ def naver_page(request):
                                                  price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
                                                  date__gte=d_day,three_day=three_day).order_by('-date')
         
-        
+        print('naver_product_list : {0}'.format(len(naver_product_list)))
         cut_naver_product_list = []
         sourcing_status_list = []
         problem_product_list = []
