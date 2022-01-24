@@ -323,9 +323,9 @@ def naver_page(request):
             naver_list = []
         else:
             naver_list = []
-            naver_page_list = json.loads(serializers.serialize("json", cut_naver_product_list[end:start]))
-            sourcing_status_list = sourcing_status_list[end:start]
-            problem_blo_list = problem_product_list[end:start]
+            naver_page_list = json.loads(serializers.serialize("json", cut_naver_product_list))
+            sourcing_status_list = sourcing_status_list
+            problem_blo_list = problem_product_list
             for index,v in enumerate(naver_page_list):
                 one = v['fields']
                 one['pk'] = v['pk']
