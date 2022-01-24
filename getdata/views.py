@@ -296,23 +296,21 @@ def naver_page(request):
                     except:
                         pass
                 if sw:
-                    if not (problem_list and problem_product):
-                        cut_naver_product_list.append(one)
-                        sourcing_status_list.append(status_dt)
-                        if cannel_product_id in problem_list:
-                            problem_product_list.append(True)
-                        else:
-                            problem_product_list.append(False)
-                
-            else:
-                if not (problem_list and problem_product):
                     cut_naver_product_list.append(one)
                     sourcing_status_list.append(status_dt)
-                    if cannel_product_id in problem_list:
+                    if cannel_product_id in product_num_list:
                         problem_product_list.append(True)
                     else:
                         problem_product_list.append(False)
-                        
+                
+            else:
+                cut_naver_product_list.append(one)
+                sourcing_status_list.append(status_dt)
+                if cannel_product_id in product_num_list:
+                    problem_product_list.append(True)
+                else:
+                    problem_product_list.append(False)
+                    
                         
                         
                         
