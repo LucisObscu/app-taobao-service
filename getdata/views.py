@@ -245,8 +245,7 @@ def naver_page(request):
         one_user_info.status = ','.join(status)
         one_user_info.save()
         
-        d_day = datetime.now(timezone('Asia/Seoul')) - timedelta(goods_day)
-        d_day = datetime(d_day.year,d_day.month,d_day.day)
+        d_day = datetime.now(timezone('Asia/Seoul')).date() - timedelta(goods_day)
         naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
                                                  six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
                                                  review__gte=review_s,review__lte=review_e,
