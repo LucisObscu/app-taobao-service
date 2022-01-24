@@ -270,9 +270,13 @@ def naver_page(request):
         start = (cut*page)
         end = start - cut
         
-        naver_product_list = naver_product_list[start:end]
-        
+        print('=================================================')
         print('naver_product_list : {0}'.format(len(naver_product_list)))
+        naver_product_list = naver_product_list[start:end]
+        print(start)
+        print(end)
+        print('ddddnaver_product_list : {0}'.format(len(naver_product_list)))
+        print('=================================================')
         cut_naver_product_list = []
         sourcing_status_list = []
         problem_product_list = []
