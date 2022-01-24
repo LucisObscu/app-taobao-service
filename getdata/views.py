@@ -257,7 +257,7 @@ def naver_page(request):
                                                      price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
                                                      date__gte=d_day,three_day=three_day).order_by('-date')
         else:
-            naver_product_list = Naver_Product.objects.filter(~Q(cannel_product_id__in=product_num_list),admin_email=admin_email,
+            naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
                                                      six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
                                                      review__gte=review_s,review__lte=review_e,
                                                      price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
