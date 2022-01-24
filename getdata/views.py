@@ -229,7 +229,8 @@ def naver_page(request):
     problem_product = option["problem_product"]
     status = option["status"]
     one_user_info = User_Info.objects.get(email=email,admin_email=admin_email)
-    
+    if goods_day > datetime.today().toordinal():
+        goods_day = datetime.today().toordinal()
     one_user_info.goods_day = goods_day
     one_user_info.three_day = three_day
     one_user_info.six_mon_s = six_mon_s
