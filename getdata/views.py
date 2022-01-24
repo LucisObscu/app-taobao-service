@@ -283,6 +283,7 @@ def naver_page(request):
         for one in naver_product_list:
             cannel_id = one.cannel_id
             product_id = one.product_id
+            cannel_product_id = one.cannel_product_id
             status_list = [i.status for i in Sourcing.objects.filter(admin_email=admin_email,cannel_id=cannel_id, product_id=product_id)]
             status_dt = {i:status_list.count(i) for i in range(4) if status_list.count(i) != 0}
             if status:
@@ -298,7 +299,7 @@ def naver_page(request):
                     if not (problem_list and problem_product):
                         cut_naver_product_list.append(one)
                         sourcing_status_list.append(status_dt)
-                        if problem_list:
+                        if cannel_product_id in problem_list:
                             problem_product_list.append(True)
                         else:
                             problem_product_list.append(False)
@@ -307,7 +308,7 @@ def naver_page(request):
                 if not (problem_list and problem_product):
                     cut_naver_product_list.append(one)
                     sourcing_status_list.append(status_dt)
-                    if problem_list:
+                    if cannel_product_id in problem_list:
                         problem_product_list.append(True)
                     else:
                         problem_product_list.append(False)
