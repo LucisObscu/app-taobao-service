@@ -45,6 +45,7 @@ class Naver_Product(models.Model):
     six_mon = models.IntegerField(default = 0)
     review = models.IntegerField(default = 0)
     review_score = models.CharField(max_length=(100),default = '')
+    cannel_product_id = models.CharField(max_length=(300),default = '')
 
 
 class Sourcing(models.Model):

@@ -22,7 +22,7 @@ class DateTimeEncoder(json.JSONEncoder):
 import math
 import traceback
 
-
+from django.db.models import Q
 def sum_pk(pk_data):
     data = pk_data['fields']
     data['pk'] = pk_data['pk']
@@ -246,11 +246,31 @@ def naver_page(request):
         one_user_info.save()
         
         d_day = datetime.now(timezone('Asia/Seoul')).date() - timedelta(goods_day)
-        naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
-                                                 six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
-                                                 review__gte=review_s,review__lte=review_e,
-                                                 price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
-                                                 date__gte=d_day,three_day=three_day).order_by('-date')
+        naver_product_list = []
+        
+        problem_list = Problem_Product.objects.filter(admin_email=admin_email)
+        product_num_list = [i.product_num for i in problem_list]
+        if problem_product:
+            naver_product_list = Naver_Product.objects.filter(~Q(cannel_product_id__in=product_num_list),admin_email=admin_email,
+                                                     six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
+                                                     review__gte=review_s,review__lte=review_e,
+                                                     price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
+                                                     date__gte=d_day,three_day=three_day).order_by('-date')
+        else:
+            naver_product_list = Naver_Product.objects.filter(~Q(cannel_product_id__in=product_num_list),admin_email=admin_email,
+                                                     six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
+                                                     review__gte=review_s,review__lte=review_e,
+                                                     price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
+                                                     date__gte=d_day,three_day=three_day).order_by('-date')            
+        
+        
+        
+        top = len(naver_product_list)
+        cut = 10
+        start = (cut*page)
+        end = start - cut
+        
+        naver_product_list = naver_product_list[start:end]
         
         print('naver_product_list : {0}'.format(len(naver_product_list)))
         cut_naver_product_list = []
@@ -259,7 +279,7 @@ def naver_page(request):
         for one in naver_product_list:
             cannel_id = one.cannel_id
             product_id = one.product_id
-            problem_list = Problem_Product.objects.filter(product_num='{0}-{1}'.format(cannel_id, product_id))
+            
     
             status_list = [i.status for i in Sourcing.objects.filter(admin_email=admin_email,cannel_id=cannel_id, product_id=product_id)]
             status_dt = {i:status_list.count(i) for i in range(4) if status_list.count(i) != 0}
@@ -290,10 +310,6 @@ def naver_page(request):
                     else:
                         problem_product_list.append(False)
         
-        top = len(cut_naver_product_list)
-        cut = 10
-        start = (cut*page)
-        end = start - cut
         if page == 0:
             naver_list = []
         else:
@@ -452,7 +468,7 @@ def naver_all_upload(request):
                                                      product_id=i['product_id'], date=i['date'],
                                                      img_width=i['img_width'], img_height=i['img_height'],
                                                      three_day=i['three_day'], six_mon=i['six_mon'], review=i['review'],
-                                                     review_score=i['review_score'])
+                                                     review_score=i['review_score'],cannel_product_id='{0}-{1}'.format(i['cannel_id'], i['product_id']))
                         #Naver_Product.objects.create(admin_email=i['admin_email'],title=i['title'], price=i['price'], delivery=i['delivery'], price_sum_delivery=i['price_sum_delivery'],org_thumbnail=i['org_thumbnail'],sub_thumbnail=i['sub_thumbnail'], img_detailed=i['img_detailed'],cannel_id=i['cannel_id'],product_id=i['product_id'], date=i['date'], img_width=i['img_width'],img_height=i['img_height'], three_day=i['three_day'],six_mon=i['six_mon'],review=i['review'],review_score=i['review_score'])
                 else:
                     data["code"] = 201
