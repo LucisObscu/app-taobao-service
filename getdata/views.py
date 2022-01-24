@@ -247,7 +247,7 @@ def naver_page(request):
         
         
         
-        search_sort = dt['search_sort']
+        search_sort = option['search_sort']
         sort_word = 'price_sum_delivery'
         if search_sort == 3:
             sort_word = 'date'
