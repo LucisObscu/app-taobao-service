@@ -245,6 +245,17 @@ def naver_page(request):
         one_user_info.status = ','.join(status)
         one_user_info.save()
         
+        
+        
+        search_sort = dt['search_sort']
+        sort_word = 'price_sum_delivery'
+        if search_sort == 3:
+            sort_word = 'date'
+        elif search_sort == 2:
+            sort_word = 'six_mon'
+            
+            
+        
         d_day = datetime.now(timezone('Asia/Seoul')).date() - timedelta(goods_day)
         naver_product_list = []
         
@@ -255,13 +266,14 @@ def naver_page(request):
                                                      six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
                                                      review__gte=review_s,review__lte=review_e,
                                                      price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
-                                                     date__gte=d_day,three_day=three_day).order_by('-date')
+                                                     date__gte=d_day,three_day=three_day).order_by('-{0}'.format(search_sort))
         else:
             naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
                                                      six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
                                                      review__gte=review_s,review__lte=review_e,
                                                      price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
-                                                     date__gte=d_day,three_day=three_day).order_by('-date')            
+                                                     date__gte=d_day,three_day=three_day).order_by('-{0}'.format(search_sort))           
+        
         
         
         
