@@ -212,66 +212,77 @@ def sourcing_product_upload(request):
         
     return HttpResponse(json.dumps(data), content_type = "application/json")   
 def naver_page(request):
-    admin_email = request.session['admin_email']
-    email = request.session['email']
-    dt = json.loads(request.body.decode('utf-8'))
-    page = dt['page']
-    option = dt['option']
     
-    goods_day = option["goods_day"]
-    three_day = option["three_day"]
-    six_mon_s = option["six_mon_s"]
-    six_mon_e = option["six_mon_e"]
-    review_s = option["review_s"]
-    review_e = option["review_e"]
-    price_min = option["price_min"]
-    price_max = option["price_max"]
-    problem_product = option["problem_product"]
-    status = option["status"]
-    one_user_info = User_Info.objects.get(email=email,admin_email=admin_email)
-    if goods_day > datetime.today().toordinal():
-        goods_day = datetime.today().toordinal()
-    one_user_info.goods_day = goods_day
-    one_user_info.three_day = three_day
-    one_user_info.six_mon_s = six_mon_s
-    one_user_info.six_mon_e = six_mon_e
-    one_user_info.review_s = review_s
-    one_user_info.review_e = review_e
-    one_user_info.price_min = price_min
-    one_user_info.price_max = price_max
-    one_user_info.problem_product = problem_product
-    one_user_info.status = ','.join(status)
-    one_user_info.save()
+    try:
+        admin_email = request.session['admin_email']
+        email = request.session['email']
+        dt = json.loads(request.body.decode('utf-8'))
+        page = dt['page']
+        option = dt['option']
+        
+        goods_day = option["goods_day"]
+        three_day = option["three_day"]
+        six_mon_s = option["six_mon_s"]
+        six_mon_e = option["six_mon_e"]
+        review_s = option["review_s"]
+        review_e = option["review_e"]
+        price_min = option["price_min"]
+        price_max = option["price_max"]
+        problem_product = option["problem_product"]
+        status = option["status"]
+        one_user_info = User_Info.objects.get(email=email,admin_email=admin_email)
+        if goods_day > datetime.today().toordinal():
+            goods_day = datetime.today().toordinal()
+        one_user_info.goods_day = goods_day
+        one_user_info.three_day = three_day
+        one_user_info.six_mon_s = six_mon_s
+        one_user_info.six_mon_e = six_mon_e
+        one_user_info.review_s = review_s
+        one_user_info.review_e = review_e
+        one_user_info.price_min = price_min
+        one_user_info.price_max = price_max
+        one_user_info.problem_product = problem_product
+        one_user_info.status = ','.join(status)
+        one_user_info.save()
+        
+        d_day = datetime.now(timezone('Asia/Seoul')) - timedelta(goods_day)
+        d_day = datetime(d_day.year,d_day.month,d_day.day)
+        naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
+                                                 six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
+                                                 review__gte=review_s,review__lte=review_e,
+                                                 price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
+                                                 date__gte=d_day,three_day=three_day).order_by('-date')
+        
+        
+        cut_naver_product_list = []
+        sourcing_status_list = []
+        problem_product_list = []
+        for one in naver_product_list:
+            cannel_id = one.cannel_id
+            product_id = one.product_id
+            problem_list = Problem_Product.objects.filter(product_num='{0}-{1}'.format(cannel_id, product_id))
     
-    d_day = datetime.now(timezone('Asia/Seoul')) - timedelta(goods_day)
-    d_day = datetime(d_day.year,d_day.month,d_day.day)
-    naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
-                                             six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
-                                             review__gte=review_s,review__lte=review_e,
-                                             price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
-                                             date__gte=d_day,three_day=three_day).order_by('-date')
-    
-    
-    cut_naver_product_list = []
-    sourcing_status_list = []
-    problem_product_list = []
-    for one in naver_product_list:
-        cannel_id = one.cannel_id
-        product_id = one.product_id
-        problem_list = Problem_Product.objects.filter(product_num='{0}-{1}'.format(cannel_id, product_id))
-
-        status_list = [i.status for i in Sourcing.objects.filter(admin_email=admin_email,cannel_id=cannel_id, product_id=product_id)]
-        status_dt = {i:status_list.count(i) for i in range(4) if status_list.count(i) != 0}
-        if status:
-            sw = False
-            for i in status:
-                try:
-                    if status_dt[int(i)] != 0:
-                        sw = True
-                        break
-                except:
-                    pass
-            if sw:
+            status_list = [i.status for i in Sourcing.objects.filter(admin_email=admin_email,cannel_id=cannel_id, product_id=product_id)]
+            status_dt = {i:status_list.count(i) for i in range(4) if status_list.count(i) != 0}
+            if status:
+                sw = False
+                for i in status:
+                    try:
+                        if status_dt[int(i)] != 0:
+                            sw = True
+                            break
+                    except:
+                        pass
+                if sw:
+                    if not (problem_list and problem_product):
+                        cut_naver_product_list.append(one)
+                        sourcing_status_list.append(status_dt)
+                        if problem_list:
+                            problem_product_list.append(True)
+                        else:
+                            problem_product_list.append(False)
+                
+            else:
                 if not (problem_list and problem_product):
                     cut_naver_product_list.append(one)
                     sourcing_status_list.append(status_dt)
@@ -279,38 +290,35 @@ def naver_page(request):
                         problem_product_list.append(True)
                     else:
                         problem_product_list.append(False)
-            
+        
+        top = len(cut_naver_product_list)
+        cut = 10
+        start = (cut*page)
+        end = start - cut
+        if page == 0:
+            naver_list = []
         else:
-            if not (problem_list and problem_product):
-                cut_naver_product_list.append(one)
-                sourcing_status_list.append(status_dt)
-                if problem_list:
-                    problem_product_list.append(True)
-                else:
-                    problem_product_list.append(False)
-    
-    top = len(cut_naver_product_list)
-    cut = 10
-    start = (cut*page)
-    end = start - cut
-    if page == 0:
-        naver_list = []
-    else:
-        naver_list = []
-        naver_page_list = json.loads(serializers.serialize("json", cut_naver_product_list[end:start]))
-        sourcing_status_list = sourcing_status_list[end:start]
-        problem_blo_list = problem_product_list[end:start]
-        for index,v in enumerate(naver_page_list):
-            one = v['fields']
-            one['pk'] = v['pk']
-            one['status'] = sourcing_status_list[index]
-            one['problem'] = problem_blo_list[index]
-            naver_list.append(one)
-    data = {
-        "code": 200,
-        "msg":"업로드 완료",
-        "data":{'list':naver_list,'count':top,'cut':10,'page':page}
-    }
+            naver_list = []
+            naver_page_list = json.loads(serializers.serialize("json", cut_naver_product_list[end:start]))
+            sourcing_status_list = sourcing_status_list[end:start]
+            problem_blo_list = problem_product_list[end:start]
+            for index,v in enumerate(naver_page_list):
+                one = v['fields']
+                one['pk'] = v['pk']
+                one['status'] = sourcing_status_list[index]
+                one['problem'] = problem_blo_list[index]
+                naver_list.append(one)
+        data = {
+            "code": 200,
+            "msg":"업로드 완료",
+            "data":{'list':naver_list,'count':top,'cut':10,'page':page}
+        }
+    except:
+        data = {
+            "code": 200,
+            "msg":traceback.format_exc(),
+            "data":{'list':naver_list,'count':top,'cut':10,'page':page}
+        }
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
