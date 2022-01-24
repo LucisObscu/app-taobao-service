@@ -276,15 +276,13 @@ def naver_page(request):
         print(start)
         print(end)
         print('ddddnaver_product_list : {0}'.format(len(naver_product_list)))
-        print('=================================================')
+        
         cut_naver_product_list = []
         sourcing_status_list = []
         problem_product_list = []
         for one in naver_product_list:
             cannel_id = one.cannel_id
             product_id = one.product_id
-            
-    
             status_list = [i.status for i in Sourcing.objects.filter(admin_email=admin_email,cannel_id=cannel_id, product_id=product_id)]
             status_dt = {i:status_list.count(i) for i in range(4) if status_list.count(i) != 0}
             if status:
@@ -313,7 +311,14 @@ def naver_page(request):
                         problem_product_list.append(True)
                     else:
                         problem_product_list.append(False)
-        
+                        
+                        
+                        
+                        
+        print('cut_naver_product_list : {0}'.format(len(cut_naver_product_list)))
+        print('sourcing_status_list : {0}'.format(len(sourcing_status_list)))
+        print('problem_product_list : {0}'.format(len(problem_product_list)))
+        print('=================================================')
         if page == 0:
             naver_list = []
         else:
