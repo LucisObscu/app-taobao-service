@@ -272,7 +272,7 @@ def naver_page(request):
         
         print('=================================================')
         print('naver_product_list : {0}'.format(len(naver_product_list)))
-        naver_product_list = naver_product_list[start:end]
+        naver_product_list = naver_product_list[end:start]
         print(start)
         print(end)
         print('ddddnaver_product_list : {0}'.format(len(naver_product_list)))
