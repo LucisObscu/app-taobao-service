@@ -247,6 +247,8 @@ def naver_page(request):
         
         
         
+        cannel_product_id_list = ['{0}-{1}'.format(j.cannel_id, j.product_id) for j in Sourcing.objects.filter(admin_email=admin_email,status__in=[int(i) for i in status])]
+        
         search_sort = option['search_sort']
         sort_word = 'price_sum_delivery'
         if search_sort == 3:
@@ -266,13 +268,13 @@ def naver_page(request):
                                                      six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
                                                      review__gte=review_s,review__lte=review_e,
                                                      price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
-                                                     date__gte=d_day,three_day=three_day).order_by('-{0}'.format(sort_word))
+                                                     date__gte=d_day,three_day=three_day,cannel_product_id__in=cannel_product_id_list).order_by('-{0}'.format(sort_word))
         else:
             naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
                                                      six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
                                                      review__gte=review_s,review__lte=review_e,
                                                      price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
-                                                     date__gte=d_day,three_day=three_day).order_by('-{0}'.format(sort_word))           
+                                                     date__gte=d_day,three_day=three_day,cannel_product_id__in=cannel_product_id_list).order_by('-{0}'.format(sort_word))           
         
         
         
