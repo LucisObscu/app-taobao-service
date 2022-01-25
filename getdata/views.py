@@ -299,7 +299,6 @@ def naver_page(request):
             status_list = [i.status for i in Sourcing.objects.filter(admin_email=admin_email,cannel_id=cannel_id, product_id=product_id)]
             status_dt = {i:status_list.count(i) for i in range(4) if status_list.count(i) != 0}
             if status:
-                '''
                 sw = False
                 for i in status:
                     try:
@@ -309,14 +308,13 @@ def naver_page(request):
                     except:
                         pass
                 if sw:
-                '''
-                cut_naver_product_list.append(one)
-                sourcing_status_list.append(status_dt)
-                if cannel_product_id in product_num_list:
-                    problem_product_list.append(True)
-                else:
-                    problem_product_list.append(False)
-            
+                    cut_naver_product_list.append(one)
+                    sourcing_status_list.append(status_dt)
+                    if cannel_product_id in product_num_list:
+                        problem_product_list.append(True)
+                    else:
+                        problem_product_list.append(False)
+                
             else:
                 cut_naver_product_list.append(one)
                 sourcing_status_list.append(status_dt)
