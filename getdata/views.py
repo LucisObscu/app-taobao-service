@@ -263,7 +263,7 @@ def naver_page(request):
         
         problem_list = Problem_Product.objects.filter(admin_email=admin_email)
         product_num_list = [i.product_num for i in problem_list]
-        if cannel_product_id_list:
+        if status:
             if problem_product:
                 naver_product_list = Naver_Product.objects.filter(~Q(cannel_product_id__in=product_num_list),admin_email=admin_email,
                                                          six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
