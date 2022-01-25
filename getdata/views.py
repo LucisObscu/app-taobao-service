@@ -263,19 +263,32 @@ def naver_page(request):
         
         problem_list = Problem_Product.objects.filter(admin_email=admin_email)
         product_num_list = [i.product_num for i in problem_list]
-        if problem_product:
-            naver_product_list = Naver_Product.objects.filter(~Q(cannel_product_id__in=product_num_list),admin_email=admin_email,
-                                                     six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
-                                                     review__gte=review_s,review__lte=review_e,
-                                                     price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
-                                                     date__gte=d_day,three_day=three_day,cannel_product_id__in=cannel_product_id_list).order_by('-{0}'.format(sort_word))
+        if cannel_product_id_list:
+            if problem_product:
+                naver_product_list = Naver_Product.objects.filter(~Q(cannel_product_id__in=product_num_list),admin_email=admin_email,
+                                                         six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
+                                                         review__gte=review_s,review__lte=review_e,
+                                                         price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
+                                                         date__gte=d_day,three_day=three_day,cannel_product_id__in=cannel_product_id_list).order_by('-{0}'.format(sort_word))
+            else:
+                naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
+                                                         six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
+                                                         review__gte=review_s,review__lte=review_e,
+                                                         price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
+                                                         date__gte=d_day,three_day=three_day,cannel_product_id__in=cannel_product_id_list).order_by('-{0}'.format(sort_word))           
         else:
-            naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
-                                                     six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
-                                                     review__gte=review_s,review__lte=review_e,
-                                                     price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
-                                                     date__gte=d_day,three_day=three_day,cannel_product_id__in=cannel_product_id_list).order_by('-{0}'.format(sort_word))           
-        
+            if problem_product:
+                naver_product_list = Naver_Product.objects.filter(~Q(cannel_product_id__in=product_num_list),admin_email=admin_email,
+                                                         six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
+                                                         review__gte=review_s,review__lte=review_e,
+                                                         price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
+                                                         date__gte=d_day,three_day=three_day).order_by('-{0}'.format(sort_word))
+            else:
+                naver_product_list = Naver_Product.objects.filter(admin_email=admin_email,
+                                                         six_mon__gte=six_mon_s,six_mon__lte=six_mon_e,
+                                                         review__gte=review_s,review__lte=review_e,
+                                                         price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
+                                                         date__gte=d_day,three_day=three_day).order_by('-{0}'.format(sort_word))                       
         
         
         
@@ -300,6 +313,7 @@ def naver_page(request):
             cannel_product_id = one.cannel_product_id
             status_list = [i.status for i in Sourcing.objects.filter(admin_email=admin_email,cannel_id=cannel_id, product_id=product_id)]
             status_dt = {i:status_list.count(i) for i in range(4) if status_list.count(i) != 0}
+            '''
             if status:
                 sw = False
                 for i in status:
@@ -318,12 +332,13 @@ def naver_page(request):
                         problem_product_list.append(False)
                 
             else:
-                cut_naver_product_list.append(one)
-                sourcing_status_list.append(status_dt)
-                if cannel_product_id in product_num_list:
-                    problem_product_list.append(True)
-                else:
-                    problem_product_list.append(False)
+            '''
+            cut_naver_product_list.append(one)
+            sourcing_status_list.append(status_dt)
+            if cannel_product_id in product_num_list:
+                problem_product_list.append(True)
+            else:
+                problem_product_list.append(False)
                     
                         
                         
