@@ -714,10 +714,10 @@ def login(request):
 def get_options(sourcing_pr,existent_op_data,rate,tax):
     options = []
     for op in existent_op_data:
-        option = {"key":"","image":"","value":[],"korValue":[],"price":"","productPrice":0,"salePrice":0,"stock":0,"margin":0,"weightPrice":0}
+        option = {"key":"","propPath":"","image":"","value":[],"korValue":[],"price":"","productPrice":0,"salePrice":0,"stock":0,"margin":0,"weightPrice":0}
         deep_op = op["deep_op"]
         option["key"] = deep_op["ids"]
-        
+        option["propPath"] = deep_op["ids"]
         option["price"] = str(deep_op["sale_price"])
         option["stock"] = int(deep_op["stock"])
         for i in op["op_list"]:
@@ -827,8 +827,9 @@ def seller_up_load(request):
                 for j in i["values"]:
                     attributes.append({"attributeTypeName":i["korTypeName"],"attributeValueName":j["korValueName"]})
             update = {"email":"","naverID":"","exchange":0,"url":"","brand":"",
-            "title":"","korTitle":"","mainImages":[],"content":[],"prop":"",
+            "title":"","korTitle":"","keywords":[],"mainImages":[],"content":[],"prop":"",
             "options":"","attributes":"","isClothes":"","isShoes":""}
+            update["keywords"] = [f.strip() for f in one.tag.strip().split(',')]
             update["email"] = email
             update["naverID"] = deep_key["{0}-{1}".format(sourcing["cannel_id"], sourcing["product_id"])]
             update["exchange"] = rate
