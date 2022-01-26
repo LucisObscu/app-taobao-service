@@ -714,7 +714,7 @@ def login(request):
 def get_options(sourcing_pr,existent_op_data,rate,tax):
     options = []
     for op in existent_op_data:
-        option = {"key":"","propPath":"","image":"","value":[],"korValue":[],"price":"","productPrice":0,"salePrice":0,"stock":0,"margin":0,"weightPrice":0}
+        option = {"key":"","propPath":"","image":"","value":[],"korValue":[],"price":"","productPrice":0,"salePrice":0,"stock":0,"margin":0,"weightPrice":0,"attributes":[]}
         deep_op = op["deep_op"]
         option["key"] = deep_op["ids"]
         option["propPath"] = deep_op["ids"]
@@ -727,6 +727,7 @@ def get_options(sourcing_pr,existent_op_data,rate,tax):
                 option["value"].append(i["name"])
             if i["korTypeName"]:
                 option["korValue"].append(i["korTypeName"])
+            option["attributes"].append({'attributeTypeName':i["korTypeName"],'attributeValueName':i["name"]})
         option["value"] = "/".join(option["value"])
         option["korValue"] = "/".join(option["korValue"])
         
@@ -735,6 +736,8 @@ def get_options(sourcing_pr,existent_op_data,rate,tax):
         option["productPrice"] = math.ceil(math.ceil((((rate*float(deep_op["origin_price"]))/((100-sourcing_pr["margin"])*0.01))*tax)+sourcing_pr["weightPrice"])*0.1)*10
         sale_price = float(deep_op["sale_price"])
         option["salePrice"] =  math.ceil(math.ceil((((rate*sale_price)/((100-sourcing_pr["margin"])*0.01))*tax)+sourcing_pr["weightPrice"])*0.1)*10
+        
+        
         options.append(option)
     return options
 
@@ -822,14 +825,11 @@ def seller_up_load(request):
             prop = get_prop(ds)
             existent_op_data = get_existent_op_data(sourcing_op_ctg,sourcing_op_deep_ctg,ds)
             options = get_options(sourcing_pr,existent_op_data,rate,tax)
-            attributes = []
-            for i in prop:
-                for j in i["values"]:
-                    attributes.append({"attributeTypeName":i["korTypeName"],"attributeValueName":j["korValueName"]})
+            
             update = {"email":"","naverID":"","exchange":0,"url":"","brand":"",
             "title":"","korTitle":"","keywords":[],"mainImages":[],"content":[],"prop":"",
             "options":"","attributes":"","isClothes":"","isShoes":""}
-            update["keywords"] = [f.strip() for f in one.tag.strip().split(',')]
+            update["keywords"] = [f.strip() for f in sourcing.tag.strip().split(',')]
             update["email"] = email
             update["naverID"] = deep_key["{0}-{1}".format(sourcing["cannel_id"], sourcing["product_id"])]
             update["exchange"] = rate
@@ -841,7 +841,6 @@ def seller_up_load(request):
             update["content"] = [i["src"] for i in cont_img]
             update["prop"] = prop
             update["options"] = options
-            update["attributes"] = attributes
             update["isClothes"] = "Y" if sourcing_pr["isClothes"] else "N"
             update["isShoes"] = "Y" if sourcing_pr["isShoes"] else "N"
             update_list.append(update)
