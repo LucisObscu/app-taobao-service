@@ -101,6 +101,10 @@ def sourcing_upload(request):
         "msg":"업로드 완료",
         "data":None
     }
+    
+    print('==========================')
+    print(datetime.now(timezone('Asia/Seoul')).replace(microsecond=0))
+    print('==========================')
     Sourcing.objects.create(item_id='',org_title=dt['title'],constructor=email,manager=email,change_thumbnail=dt['sub_thumbnail'],status=0,
                             date=datetime.now(timezone('Asia/Seoul')).replace(microsecond=0),cannel_id=dt['cannel_id'],product_id=dt['product_id'],admin_email=admin_email,tag='')
 
