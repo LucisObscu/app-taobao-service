@@ -838,7 +838,7 @@ def seller_up_load(request):
             "title":"","korTitle":"","keywords":[],"mainImages":[],"content":[],"prop":"",
             "options":"","attributes":"","isClothes":"","isShoes":""}
             print('222222222222222222222222222222222222')
-            print(sourcing.tag)
+            print(sourcing['tag'])
             print('222222222222222222222222222222222222')
             update["keywords"] = [f.strip() for f in sourcing.tag.strip().split(',')]
             update["email"] = email
