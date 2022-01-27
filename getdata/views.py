@@ -837,6 +837,9 @@ def seller_up_load(request):
             update = {"email":"","naverID":"","exchange":0,"url":"","brand":"",
             "title":"","korTitle":"","keywords":[],"mainImages":[],"content":[],"prop":"",
             "options":"","attributes":"","isClothes":"","isShoes":""}
+            print('222222222222222222222222222222222222')
+            print(sourcing.tag)
+            print('222222222222222222222222222222222222')
             update["keywords"] = [f.strip() for f in sourcing.tag.strip().split(',')]
             update["email"] = email
             update["naverID"] = deep_key["{0}-{1}".format(sourcing["cannel_id"], sourcing["product_id"])]
