@@ -14,7 +14,8 @@ from django.core import serializers
 from django.forms.models import model_to_dict
 #from getdata.serializers import SourcingSerializer,Sourcing_ProductSerializer,Sourcing_OptionSerializer
 #from rest_framework import viewsets
-from pytz import timezone
+from django.utils import timezone
+
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
         encoded_object = str(obj)
@@ -100,7 +101,7 @@ def sourcing_upload(request):
         "data":None
     }
     Sourcing.objects.create(item_id='',org_title=dt['title'],constructor=email,manager=email,change_thumbnail=dt['sub_thumbnail'],status=0,
-                            date=datetime.now(timezone('Asia/Seoul')).replace(microsecond=0),cannel_id=dt['cannel_id'],product_id=dt['product_id'],admin_email=admin_email,tag='')
+                            date=timezone.now().replace(microsecond=0),cannel_id=dt['cannel_id'],product_id=dt['product_id'],admin_email=admin_email,tag='')
 
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
@@ -251,10 +252,13 @@ def naver_page(request):
         
         search_sort = option['search_sort']
         sort_word = 'price_sum_delivery'
-        if search_sort == 3:
+        if search_sort == 4:
+            sort_word = 'review'
+        elif search_sort == 3:
             sort_word = 'date'
         elif search_sort == 2:
             sort_word = 'six_mon'
+
             
             
         
