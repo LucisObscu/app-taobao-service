@@ -850,10 +850,6 @@ def seller_up_load(request):
             update["options"] = options
             update["isClothes"] = "Y" if sourcing_pr["isClothes"] else "N"
             update["isShoes"] = "Y" if sourcing_pr["isShoes"] else "N"
-            print('2222222222222222222222222222222')
-            print(update)
-            print('2222222222222222222222222222222')
-            '''
             update_list.append(update)
             headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
             req = requests.post('https://tsnullp.herokuapp.com/seller/product',data=json.dumps(update),headers=headers)
@@ -865,7 +861,6 @@ def seller_up_load(request):
                 else:
                     one.status = 3
             one.save()
-            '''
         except:
             data["msg"] = traceback.format_exc()
 
