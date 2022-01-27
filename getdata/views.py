@@ -155,68 +155,71 @@ def sourcing_product_confirm(request):
     
 
 def sourcing_product_upload(request):
-    admin_email = request.session['admin_email']
-    dt = json.loads(request.body.decode('utf-8'))
-    pk_id = dt['pk']
-    data = dt['data']
-    item_id = data['item_id']
-    one = Sourcing.objects.get(id=pk_id,admin_email=admin_email)
-    one.item_id=item_id
-    try:
-        one.change_thumbnail = data['main_imgs'][0]
-    except:
-        pass
-    one.save()
-    
-    user = User_Info.objects.get(admin_email=admin_email)
-    margin = user.margin
-    
-    Sourcing_Product.objects.create(title=data['title'], sourcing_id=one, korTitle=data['ko_title'],
-                                    margin=margin, weightPrice=6000,weight=1, memo='', brand='기타')
-    for i in data['main_imgs']:
-        Main_Images.objects.create(sourcing_id=one, src=i)
-    for i in data['detail_imgs']:
-        Content_Images.objects.create(sourcing_id=one, src=i)
-    
-    for i in data['sku_props']:
-        pid = i['pid']
-        ctg_name = i['prop_name']
-        ctg_korTypeName = i['ko_name']
-        if i['values']:
-            for k in i['values']:
-                name = k['name']
-                vid = k['vid']
-                korTypeName = k['ko_name']
-                imageUrl = ''
-                try:
-                    imageUrl = k['imageUrl']
-                except:
-                    pass
-                Sourcing_Option_Category.objects.create(sourcing_id=one, pid=pid, ctg_name=ctg_name, ctg_korTypeName=ctg_korTypeName,
-                                                        vid=vid, name=name, korTypeName=korTypeName, image=imageUrl,select=True)
-        else:
-            Sourcing_Option_Category.objects.create(sourcing_id=one, pid=pid, ctg_name=ctg_name, ctg_korTypeName=ctg_korTypeName,
-                                                    vid='', name='', korTypeName='', image='',select=True)
-    for i in data['skus']:
-        ids = i['props_ids']
-        
-        sale_price = i['sale_price']
-        origin_price = i['origin_price']
-        if i['origin_price']:
-            origin_price = float(i['origin_price'])
-        else:
-            origin_price = sale_price
-        sale_price = float(sale_price)
-        skuid = i['skuid']
-        stock = i['stock']
-        Sourcing_Option_Deep_Category.objects.create(sourcing_id=one, ids=ids, sale_price=sale_price, origin_price=origin_price, skuid=skuid, stock=stock)
-        
-    data = {
+    datat = {
         "code": 200,
         "msg":"업로드 완료"
-    }        
+    }   
+    try:
+        admin_email = request.session['admin_email']
+        dt = json.loads(request.body.decode('utf-8'))
+        pk_id = dt['pk']
+        data = dt['data']
+        item_id = data['item_id']
+        one = Sourcing.objects.get(id=pk_id,admin_email=admin_email)
+        one.item_id=item_id
+        try:
+            one.change_thumbnail = data['main_imgs'][0]
+        except:
+            pass
+        one.save()
         
-    return HttpResponse(json.dumps(data), content_type = "application/json")   
+        user = User_Info.objects.get(admin_email=admin_email)
+        margin = user.margin
+        
+        Sourcing_Product.objects.create(title=data['title'], sourcing_id=one, korTitle=data['ko_title'],
+                                        margin=margin, weightPrice=6000,weight=1, memo='', brand='기타')
+        for i in data['main_imgs']:
+            Main_Images.objects.create(sourcing_id=one, src=i)
+        for i in data['detail_imgs']:
+            Content_Images.objects.create(sourcing_id=one, src=i)
+        
+        for i in data['sku_props']:
+            pid = i['pid']
+            ctg_name = i['prop_name']
+            ctg_korTypeName = i['ko_name']
+            if i['values']:
+                for k in i['values']:
+                    name = k['name']
+                    vid = k['vid']
+                    korTypeName = k['ko_name']
+                    imageUrl = ''
+                    try:
+                        imageUrl = k['imageUrl']
+                    except:
+                        pass
+                    Sourcing_Option_Category.objects.create(sourcing_id=one, pid=pid, ctg_name=ctg_name, ctg_korTypeName=ctg_korTypeName,
+                                                            vid=vid, name=name, korTypeName=korTypeName, image=imageUrl,select=True)
+            else:
+                Sourcing_Option_Category.objects.create(sourcing_id=one, pid=pid, ctg_name=ctg_name, ctg_korTypeName=ctg_korTypeName,
+                                                        vid='', name='', korTypeName='', image='',select=True)
+        for i in data['skus']:
+            ids = i['props_ids']
+            
+            sale_price = i['sale_price']
+            origin_price = i['origin_price']
+            if i['origin_price']:
+                origin_price = float(i['origin_price'])
+            else:
+                origin_price = sale_price
+            sale_price = float(sale_price)
+            skuid = i['skuid']
+            stock = i['stock']
+            Sourcing_Option_Deep_Category.objects.create(sourcing_id=one, ids=ids, sale_price=sale_price, origin_price=origin_price, skuid=skuid, stock=stock)
+    except:
+        datat['msg'] = traceback.format_exc()  
+     
+        
+    return HttpResponse(json.dumps(datat), content_type = "application/json")   
 def naver_page(request):
     
     try:
