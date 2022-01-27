@@ -833,14 +833,10 @@ def seller_up_load(request):
             prop = get_prop(ds)
             existent_op_data = get_existent_op_data(sourcing_op_ctg,sourcing_op_deep_ctg,ds)
             options = get_options(sourcing_pr,existent_op_data,rate,tax)
-            
             update = {"email":"","naverID":"","exchange":0,"url":"","brand":"",
             "title":"","korTitle":"","keywords":[],"mainImages":[],"content":[],"prop":"",
             "options":"","attributes":"","isClothes":"","isShoes":""}
-            print('222222222222222222222222222222222222')
-            print(sourcing)
-            print('222222222222222222222222222222222222')
-            update["keywords"] = [f.strip() for f in sourcing.tag.strip().split(',')]
+            update["keywords"] = [f.strip() for f in sourcing['tag'].strip().split(',') if f.strip() != ""]
             update["email"] = email
             update["naverID"] = deep_key["{0}-{1}".format(sourcing["cannel_id"], sourcing["product_id"])]
             update["exchange"] = rate
@@ -854,6 +850,10 @@ def seller_up_load(request):
             update["options"] = options
             update["isClothes"] = "Y" if sourcing_pr["isClothes"] else "N"
             update["isShoes"] = "Y" if sourcing_pr["isShoes"] else "N"
+            print('2222222222222222222222222222222')
+            print(update)
+            print('2222222222222222222222222222222')
+            '''
             update_list.append(update)
             headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
             req = requests.post('https://tsnullp.herokuapp.com/seller/product',data=json.dumps(update),headers=headers)
@@ -865,6 +865,7 @@ def seller_up_load(request):
                 else:
                     one.status = 3
             one.save()
+            '''
         except:
             data["msg"] = traceback.format_exc()
 
