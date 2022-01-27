@@ -848,11 +848,27 @@ def seller_up_load(request):
             update["title"] = sourcing_pr["title"]
             update["korTitle"] = sourcing["org_title"]
             update["mainImages"] = [i["src"] for i in main_img]
+            
+            if update["mainImages"]:
+                update["mainImages"][0] = sourcing['change_thumbnail']
+            
             update["content"] = [i["src"] for i in cont_img]
-            update["prop"] = prop
-            update["options"] = options
+
             update["isClothes"] = "Y" if sourcing_pr["isClothes"] else "N"
             update["isShoes"] = "Y" if sourcing_pr["isShoes"] else "N"
+            update["prop"] = prop
+            update["options"] = options
+            
+            if update["prop"] == []:
+                update["prop"].append({'pid':'1','name':'','korTypeName':'종류','values':[{'vid':'1','name':'','korValueName':'단일상품','image':sourcing['change_thumbnail']}]})
+                for i,v in enumerate(update["options"]):
+                    update["options"][i]['key'] = '1'
+                    update["options"][i]['propPath'] = '1:1'
+                    update["options"][i]['image'] = sourcing['change_thumbnail']
+                    update["options"][i]['value'] = ''
+                    update["options"][i]['korValue'] = '단일상품'
+                    update["options"][i]['attributes'] = [{'attributeTypeName':'종류','attributeValueName':'단일상품'}]
+            
             update_list.append(update)
             headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
             req = requests.post('https://tsnullp.herokuapp.com/seller/product',data=json.dumps(update),headers=headers)
