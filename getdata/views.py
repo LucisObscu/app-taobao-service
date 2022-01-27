@@ -735,7 +735,7 @@ def get_options(sourcing_pr,existent_op_data,rate,tax):
                 option["value"].append(i["name"])
             if i["korTypeName"]:
                 option["korValue"].append(i["korTypeName"])
-            option["attributes"].append({'attributeTypeName':i["korTypeName"],'attributeValueName':i["name"]})
+            option["attributes"].append({'attributeTypeName':i["ctg_korTypeName"],'attributeValueName':i["korTypeName"]})
         option["value"] = "/".join(option["value"])
         option["korValue"] = "/".join(option["korValue"])
         
