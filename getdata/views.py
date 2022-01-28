@@ -158,6 +158,7 @@ def sourcing_product_upload(request):
         "msg":"업로드 완료"
     }   
     try:
+        email = request.session['email']
         admin_email = request.session['admin_email']
         dt = json.loads(request.body.decode('utf-8'))
         pk_id = dt['pk']
