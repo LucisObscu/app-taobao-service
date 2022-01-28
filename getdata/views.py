@@ -102,9 +102,7 @@ def sourcing_upload(request):
         "data":None
     }
     
-    print('==========================')
-    print(datetime.now(timezone('Asia/Seoul')).replace(microsecond=0))
-    print('==========================')
+
     Sourcing.objects.create(item_id='',org_title=dt['title'],constructor=email,manager=email,change_thumbnail=dt['sub_thumbnail'],status=0,
                             date=datetime.now(timezone('Asia/Seoul')).replace(microsecond=0),cannel_id=dt['cannel_id'],product_id=dt['product_id'],admin_email=admin_email,tag='')
 
@@ -165,6 +163,12 @@ def sourcing_product_upload(request):
         pk_id = dt['pk']
         data = dt['data']
         item_id = data['item_id']
+        
+        
+        user = User_Info.objects.get(email=admin_email,admin_email=admin_email)
+        margin = user.margin
+        
+        
         one = Sourcing.objects.get(id=pk_id,admin_email=admin_email)
         one.item_id=item_id
         try:
@@ -173,8 +177,7 @@ def sourcing_product_upload(request):
             pass
         one.save()
         
-        user = User_Info.objects.get(admin_email=admin_email)
-        margin = user.margin
+       
         
         Sourcing_Product.objects.create(title=data['title'], sourcing_id=one, korTitle=data['ko_title'],
                                         margin=margin, weightPrice=6000,weight=1, memo='', brand='기타')
@@ -216,7 +219,8 @@ def sourcing_product_upload(request):
             stock = i['stock']
             Sourcing_Option_Deep_Category.objects.create(sourcing_id=one, ids=ids, sale_price=sale_price, origin_price=origin_price, skuid=skuid, stock=stock)
     except:
-        datat['msg'] = traceback.format_exc()  
+        datat['msg'] = traceback.format_exc()
+        print(traceback.format_exc())
      
         
     return HttpResponse(json.dumps(datat), content_type = "application/json")   
