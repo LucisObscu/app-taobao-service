@@ -21,5 +21,5 @@ urlpatterns = [
     path('prohibition_list_get',views.prohibition_list_get,name="prohibition_list_get"),
     path('seller_up_load',views.seller_up_load,name="seller_up_load"),
     path('naver_all_delete',views.naver_all_delete,name="naver_all_delete"),
-    
+    path('activation',views.activation,name="activation"),
 ]

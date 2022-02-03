@@ -893,4 +893,16 @@ def seller_up_load(request):
     
     
     
-    
+def activation(request):
+    data = {
+        "code": 200,
+        "msg":"활성화 완료",
+    }
+    return HttpResponse(json.dumps(data), content_type = "application/json")
+
+
+
+
+
+
+
