@@ -907,10 +907,7 @@ def activation(request):
     }
     
     try:
-        naver_list = Naver_Product.objects.filter().all()
-        naver_list = naver_list[:len(naver_list)-1000]
-        for i in naver_list:
-            i.delete() 
+        Prohibition.objects.create(email='test', admin_email='test', keyword='test')
         return HttpResponse(json.dumps(data), content_type = "application/json")
     except:
         data["msg"] = traceback.format_exc()
