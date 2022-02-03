@@ -905,12 +905,11 @@ def activation(request):
         "code": 200,
         "msg":"활성화 완료",
     }
-
+    
     try:
-        if True:
-            Prohibition.objects.create(email='text', admin_email='text', keyword='text')
-        user_list = [i.email for i in User_Info.objects.filter().all()]
-        data['data'] = user_list
+        naver_list = Naver_Product.objects.filter().all()
+        naver_list = naver_list[len(naver_list)-1000:]
+        naver_list.delete() 
         return HttpResponse(json.dumps(data), content_type = "application/json")
     except:
         data["msg"] = traceback.format_exc()
