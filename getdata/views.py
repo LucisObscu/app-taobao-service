@@ -671,7 +671,7 @@ def login(request):
                             m_email_list.append(i.email)
                         except:
                             pass
-                    
+                    '''
                     print('새로 작원 계정 등록')
                     if m_text['code'] == 'SUCCESS':
                         for user in m_text['data']:
@@ -680,6 +680,7 @@ def login(request):
                             if u_email not in m_email_list:
                                 User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False)
                     User_Info.save()
+                    '''
                     text['message'] = '로그인 성고'
                     text['user_list'] = serializers.serialize("json", User_Info.objects.filter(admin_email=m_email))
                     text['setting'] = model_to_dict(User_Info.objects.get(email=m_email))
