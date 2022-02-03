@@ -905,9 +905,10 @@ def activation(request):
         "code": 200,
         "msg":"활성화 완료",
     }
-    if False:
-        Prohibition.objects.create(email='text', admin_email='text', keyword='text')
+
     try:
+        if True:
+            Prohibition.objects.create(email='text', admin_email='text', keyword='text')
         user_list = [i.email for i in User_Info.objects.filter().all()]
         data['data'] = user_list
         return HttpResponse(json.dumps(data), content_type = "application/json")
