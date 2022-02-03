@@ -904,13 +904,12 @@ def activation(request):
     data = {
         "code": 200,
         "msg":"활성화 완료",
-    }    
+    }
+    if False:
+        Prohibition.objects.create(email='text', admin_email='text', keyword='text')
     try:
         user_list = [i.email for i in User_Info.objects.filter().all()]
-        data['data'] = [user_list for i in range(50)]
-        print('========================')
-        print(len(json.dumps(data)))
-        print('========================')
+        data['data'] = user_list
         return HttpResponse(json.dumps(data), content_type = "application/json")
     except:
         data["msg"] = traceback.format_exc()
