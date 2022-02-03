@@ -692,9 +692,6 @@ def login(request):
                         if Secret_Key.objects.filter(admin_email=m_email):
                             one = Secret_Key.objects.get(admin_email=m_email)
                             text['key'] = one.key
-                        print('=========================')
-                        print(len(json.dumps(text)))
-                        print('==========================')
                         return HttpResponse(json.dumps(text), content_type = "application/json")
                     except:
                         data = {'msg':traceback.format_exc()}
