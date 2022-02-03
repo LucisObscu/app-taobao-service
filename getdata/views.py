@@ -679,6 +679,7 @@ def login(request):
                             u_nickname = user['nickname']
                             if u_email not in m_email_list:
                                 User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False)
+                    User_Info.save()
                     text['message'] = '로그인 성고'
                     text['user_list'] = serializers.serialize("json", User_Info.objects.filter(admin_email=m_email))
                     text['setting'] = model_to_dict(User_Info.objects.get(email=m_email))
@@ -691,10 +692,7 @@ def login(request):
                     if Secret_Key.objects.filter(admin_email=m_email):
                         one = Secret_Key.objects.get(admin_email=m_email)
                         text['key'] = one.key
-                    print(text)
-                    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                    json.dumps(text)
-                    print('???????????????????????????????????')
+                        
                     return HttpResponse(json.dumps(text), content_type = "application/json")
             else:
                 print('직원 계정이고')
