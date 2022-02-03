@@ -673,25 +673,30 @@ def login(request):
                             pass
                     
                     print('새로 작원 계정 등록')
-                    if m_text['code'] == 'SUCCESS':
-                        for user in m_text['data']:
-                            u_email = user['email']
-                            u_nickname = user['nickname']
-                            if u_email not in m_email_list:
-                                User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False)
-                    text['message'] = '로그인 성고'
-                    text['user_list'] = serializers.serialize("json", User_Info.objects.filter(admin_email=m_email))
-                    text['setting'] = model_to_dict(User_Info.objects.get(email=m_email))
-                    text['prohibition'] = serializers.serialize("json", Prohibition.objects.filter(admin_email=m_email))
-                    request.session['email'] = m_email
-                    request.session['nickname'] = info.nickname
-                    request.session['admin_email'] = m_email
-                    request.session['admin'] = True
-                    text['key'] = ''
-                    if Secret_Key.objects.filter(admin_email=m_email):
-                        one = Secret_Key.objects.get(admin_email=m_email)
-                        text['key'] = one.key
-                    return HttpResponse(json.dumps(text), content_type = "application/json")
+                    try:
+                        if m_text['code'] == 'SUCCESS':
+                            for user in m_text['data']:
+                                u_email = user['email']
+                                u_nickname = user['nickname']
+                                if u_email not in m_email_list:
+                                    User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False)
+                        text['message'] = '로그인 성고'
+                        text['user_list'] = serializers.serialize("json", User_Info.objects.filter(admin_email=m_email))
+                        text['setting'] = model_to_dict(User_Info.objects.get(email=m_email))
+                        text['prohibition'] = serializers.serialize("json", Prohibition.objects.filter(admin_email=m_email))
+                        request.session['email'] = m_email
+                        request.session['nickname'] = info.nickname
+                        request.session['admin_email'] = m_email
+                        request.session['admin'] = True
+                        text['key'] = ''
+                        if Secret_Key.objects.filter(admin_email=m_email):
+                            one = Secret_Key.objects.get(admin_email=m_email)
+                            text['key'] = one.key
+                        return HttpResponse(json.dumps(text), content_type = "application/json")
+                    except:
+                        text['code'] = 'ERROR'
+                        text['message'] = traceback.format_exc()
+                        return HttpResponse(json.dumps(text), content_type = "application/json")
             else:
                 print('직원 계정이고')
                 #직원 계정이고
