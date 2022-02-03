@@ -691,7 +691,6 @@ def login(request):
                     if Secret_Key.objects.filter(admin_email=m_email):
                         one = Secret_Key.objects.get(admin_email=m_email)
                         text['key'] = one.key
-                    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                     return HttpResponse(json.dumps(text), content_type = "application/json")
             else:
                 print('직원 계정이고')
