@@ -908,7 +908,7 @@ def activation(request):
     
     try:
         naver_list = Naver_Product.objects.filter().all()
-        naver_list = naver_list[len(naver_list)-1000:]
+        naver_list = naver_list[:len(naver_list)-1000]
         for i in naver_list:
             i.delete() 
         return HttpResponse(json.dumps(data), content_type = "application/json")
