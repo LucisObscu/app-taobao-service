@@ -900,9 +900,14 @@ def activation(request):
     data = {
         "code": 200,
         "msg":"활성화 완료",
-    }
-    return HttpResponse(json.dumps(data), content_type = "application/json")
-
+    }    
+    try:
+        user_list = [i.email for i in User_Info.objects.filter().all()]
+        data['data'] = user_list
+        return HttpResponse(json.dumps(data), content_type = "application/json")
+    except:
+        data["msg"] = traceback.format_exc()
+        return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
 
