@@ -907,7 +907,10 @@ def activation(request):
     }    
     try:
         user_list = [i.email for i in User_Info.objects.filter().all()]
-        data['data'] = user_list
+        data['data'] = [user_list for i in range(50)]
+        print('========================')
+        print(len(json.dumps(data)))
+        print('========================')
         return HttpResponse(json.dumps(data), content_type = "application/json")
     except:
         data["msg"] = traceback.format_exc()
