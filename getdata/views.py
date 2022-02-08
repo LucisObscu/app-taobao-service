@@ -379,7 +379,7 @@ def naver_page(request):
         data = {
             "code": 200,
             "msg":"업로드 완료",
-            "data":{'list':naver_list,'count':top,'cut':10,'page':page}
+            "data":{'list':naver_list,'count':top,'cut':cut,'page':page}
         }
     except:
         data = {
@@ -458,7 +458,7 @@ def sourcing_page(request):
     data = {
         "code": 200,
         "msg":"업로드 완료",
-        "data":{'list':naver_list,'count':top,'cut':10,'page':page}
+        "data":{'list':naver_list,'count':top,'cut':cut,'page':page}
     }
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
