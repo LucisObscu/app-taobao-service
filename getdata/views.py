@@ -379,7 +379,7 @@ def naver_page(request):
         data = {
             "code": 200,
             "msg":"업로드 완료",
-            "data":{'list':naver_list,'count':top,'cut':50,'page':page}
+            "data":{'list':naver_list,'count':top,'cut':10,'page':page}
         }
     except:
         data = {
@@ -458,7 +458,7 @@ def sourcing_page(request):
     data = {
         "code": 200,
         "msg":"업로드 완료",
-        "data":{'list':naver_list,'count':top,'cut':50,'page':page}
+        "data":{'list':naver_list,'count':top,'cut':10,'page':page}
     }
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
@@ -633,6 +633,7 @@ def login(request):
                     info = User_Info.objects.get(email=email,admin=True,admin_email=email)
                 except:
                     info = None
+                    
                 m_data = 'email={0}'.format(email)
                 m_req = requests.get('https://tsnullp.herokuapp.com/seller/getStaff?'+m_data)
                 m_text = m_req.json()
