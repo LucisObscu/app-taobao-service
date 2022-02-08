@@ -309,7 +309,7 @@ def naver_page(request):
         
         
         top = len(naver_product_list)
-        cut = 10
+        cut = 50
         start = (cut*page)
         end = start - cut
         
@@ -379,7 +379,7 @@ def naver_page(request):
         data = {
             "code": 200,
             "msg":"업로드 완료",
-            "data":{'list':naver_list,'count':top,'cut':10,'page':page}
+            "data":{'list':naver_list,'count':top,'cut':50,'page':page}
         }
     except:
         data = {
@@ -444,7 +444,7 @@ def sourcing_page(request):
     
     page = dt['page']
     top = sourcing_page_list.count()
-    cut = 10
+    cut = 50
     start = (cut*page)
     end = start - cut
     if page == 0:
@@ -458,7 +458,7 @@ def sourcing_page(request):
     data = {
         "code": 200,
         "msg":"업로드 완료",
-        "data":{'list':naver_list,'count':top,'cut':10,'page':page}
+        "data":{'list':naver_list,'count':top,'cut':50,'page':page}
     }
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
