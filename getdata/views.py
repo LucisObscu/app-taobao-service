@@ -150,7 +150,31 @@ def sourcing_product_confirm(request):
     return HttpResponse(json.dumps(data), content_type = "application/json")   
 
 
+def set_item_id(request):
+    data = {
+        "code": 200,
+        "msg":"업로드 완료",
+    }
+    dt = json.loads(request.body.decode('utf-8'))
+    admin_email = request.session['admin_email']
     
+    pk_id = dt['pk']
+    item_id = dt['item_id']
+    try:
+        one_sourcing = Sourcing.objects.get(id=pk_id,admin_email=admin_email)
+        [i.delete() for i in Sourcing_Product.objects.filter(sourcing_id=one_sourcing)]
+        [i.delete() for i in Sourcing_Option_Category.objects.filter(sourcing_id=one_sourcing)]
+        [i.delete() for i in Sourcing_Option_Deep_Category.objects.filter(sourcing_id=one_sourcing)]
+        [i.delete() for i in Main_Images.objects.filter(sourcing_id=one_sourcing)]
+        [i.delete() for i in Content_Images.objects.filter(sourcing_id=one_sourcing)]
+        one_sourcing.item_id = item_id
+        one_sourcing.save()
+    except:
+        data = {
+            "code": 404,
+            "msg":"업로드 실패",
+        }
+    return HttpResponse(json.dumps(data), content_type = "application/json")  
 
 def sourcing_product_upload(request):
     datat = {
@@ -220,6 +244,7 @@ def sourcing_product_upload(request):
             stock = i['stock']
             Sourcing_Option_Deep_Category.objects.create(sourcing_id=one, ids=ids, sale_price=sale_price, origin_price=origin_price, skuid=skuid, stock=stock)
     except:
+        datat['code'] = 404
         datat['msg'] = traceback.format_exc()
         print(traceback.format_exc())
      

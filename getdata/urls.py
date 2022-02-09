@@ -22,4 +22,7 @@ urlpatterns = [
     path('seller_up_load',views.seller_up_load,name="seller_up_load"),
     path('naver_all_delete',views.naver_all_delete,name="naver_all_delete"),
     path('activation',views.activation,name="activation"),
+    path('set_item_id',views.set_item_id,name="set_item_id"),
+    
+    
 ]
