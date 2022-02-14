@@ -12,10 +12,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime,timedelta
 from django.core import serializers
 from django.forms.models import model_to_dict
-#from getdata.serializers import SourcingSerializer,Sourcing_ProductSerializer,Sourcing_OptionSerializer
-#from rest_framework import viewsets
 from pytz import timezone
-#from django.utils import timezone
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -39,8 +36,11 @@ def sourcing_delect(request):
     }
     admin_email = request.session['admin_email']
     dt = json.loads(request.body.decode('utf-8'))
-    Sourcing.objects.filter(id__in = [i['pk'] for i in dt],admin_email=admin_email).delete() 
-    
+    for one in Sourcing.objects.filter(id__in = [i['pk'] for i in dt],admin_email=admin_email):
+        try:
+            one.delete()
+        except:
+            pass
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
@@ -354,26 +354,7 @@ def naver_page(request):
             cannel_product_id = one.cannel_product_id
             status_list = [i.status for i in Sourcing.objects.filter(admin_email=admin_email,cannel_id=cannel_id, product_id=product_id)]
             status_dt = {i:status_list.count(i) for i in range(4) if status_list.count(i) != 0}
-            '''
-            if status:
-                sw = False
-                for i in status:
-                    try:
-                        if status_dt[int(i)] != 0:
-                            sw = True
-                            break
-                    except:
-                        pass
-                if sw:
-                    cut_naver_product_list.append(one)
-                    sourcing_status_list.append(status_dt)
-                    if cannel_product_id in product_num_list:
-                        problem_product_list.append(True)
-                    else:
-                        problem_product_list.append(False)
-                
-            else:
-            '''
+  
             cut_naver_product_list.append(one)
             sourcing_status_list.append(status_dt)
             if cannel_product_id in product_num_list:
