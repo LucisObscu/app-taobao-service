@@ -703,6 +703,8 @@ def prohibition_list_get(request):
 def login(request):
     print(request.session.session_key)
     try:
+        req_text = request.body.decode('utf-8')
+        req_text = req_text.replace('true,','True,')
         dt = json.loads(request.body.decode('utf-8'))
         text = dt['login_data']
         if text['code'] == 'SUCCESS':
