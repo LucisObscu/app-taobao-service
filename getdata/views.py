@@ -34,6 +34,7 @@ def sum_pk(pk_data):
 
 
 def sourcing_delect(request):
+    logger.info('sourcing_delect')
     data = {
         "code": 200,
         "msg":"업로드 완료",
@@ -55,6 +56,7 @@ def sourcing_delect(request):
 
 
 def sourcing_update(request):
+    logger.info('sourcing_update')
     data = {
         "code": 200,
         "msg":"업로드 완료",
@@ -104,6 +106,7 @@ def sourcing_update(request):
 
 
 def sourcing_upload(request):
+    logger.info('sourcing_upload')
     try:
         dt = json.loads(request.body.decode('utf-8'))
         email = request.session['email']
@@ -135,6 +138,7 @@ def get_sourcing_data(one_sourcing):
     
 
 def sourcing_product_delete(request):
+    logger.info('sourcing_product_delete')
     data = {
         "code": 200,
         "msg":"삭제 완료",
@@ -158,6 +162,7 @@ def sourcing_product_delete(request):
     return HttpResponse(json.dumps(data), content_type = "application/json")   
     
 def sourcing_product_confirm(request):
+    logger.info('sourcing_product_confirm')
     data = {
         "code": 200,
         "msg":"업로드 완료",
@@ -180,6 +185,7 @@ def sourcing_product_confirm(request):
 
 
 def set_item_id(request):
+    logger.info('set_item_id')
     data = {
         "code": 200,
         "msg":"업로드 완료",
@@ -209,6 +215,7 @@ def set_item_id(request):
     return HttpResponse(json.dumps(data), content_type = "application/json")  
 
 def sourcing_product_upload(request):
+    logger.info('sourcing_product_upload')
     datat = {
         "code": 200,
         "msg":"업로드 완료"
@@ -284,7 +291,7 @@ def sourcing_product_upload(request):
         
     return HttpResponse(json.dumps(datat), content_type = "application/json")   
 def naver_page(request):
-    
+    logger.info('naver_page')
     try:
         admin_email = request.session['admin_email']
         email = request.session['email']
@@ -432,6 +439,7 @@ def naver_page(request):
 
 
 def problem_set(request):
+    logger.info('problem_set')
     data = {
         "code": 200,
         "msg":"업로드 완료"
@@ -455,6 +463,7 @@ def problem_set(request):
     return HttpResponse(json.dumps(data), content_type = "application/json")    
 
 def sourcing_page(request):
+    logger.info('sourcing_page')
     try:
         admin_email = request.session['admin_email']
         dt = json.loads(request.body.decode('utf-8'))
@@ -519,6 +528,7 @@ def sourcing_page(request):
         logger.info(ero_msg)
         return HttpResponse(json.dumps(data), content_type = "application/json")
 def manager_update(request):
+    logger.info('manager_update')
     data = {
         "code": 200,
         "msg":"업로드 완료",
@@ -544,6 +554,7 @@ def manager_update(request):
 
 
 def naver_all_delete(request):
+    logger.info('naver_all_delete')
     data = {
         "code": 200,
         "msg": "삭제 완료"
@@ -557,6 +568,7 @@ def naver_all_delete(request):
         logger.info(ero_msg)
     return HttpResponse(json.dumps(data), content_type = "application/json")
 def naver_all_upload(request):
+    logger.info('naver_all_upload')
     data = {
         "code": 200,
         "msg": "업로드 완료"
@@ -609,6 +621,7 @@ def naver_all_upload(request):
 
 
 def setting_save(request):
+    logger.info('setting_save')
     data = {
         "code": 200,
         "msg":"업로드 완료"
@@ -641,6 +654,7 @@ def setting_save(request):
     return HttpResponse(json.dumps(data), content_type = "application/json")
     
 def prohibition(request):
+    logger.info('prohibition')
     data = {
         "code": 200,
         "msg":"업로드 완료"
@@ -673,6 +687,7 @@ def prohibition(request):
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 def prohibition_list_get(request):
+    logger.info('prohibition_list_get')
     data = {
         "code": 200,
         "msg":"업로드 완료",
@@ -701,6 +716,7 @@ def prohibition_list_get(request):
         return HttpResponse(json.dumps(data), content_type = "application/json")    
 
 def login(request):
+    logger.info('login')
     print(request.session.session_key)
     try:
         req_text = request.body.decode('utf-8')
@@ -895,6 +911,7 @@ def get_existent_op_data(sourcing_op_ctg,sourcing_op_deep_ctg,ds):
     
     
 def seller_up_load(request):
+    logger.info('seller_up_load')
     data = {
         "code": 200,
         "msg":"업로드 완료",
@@ -989,6 +1006,7 @@ def seller_up_load(request):
     
     
 def activation(request):
+    logger.info('activation')
     data = {
         "code": 200,
         "msg":"활성화 완료",
