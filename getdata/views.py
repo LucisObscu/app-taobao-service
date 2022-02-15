@@ -13,7 +13,7 @@ from datetime import datetime,timedelta
 from django.core import serializers
 from django.forms.models import model_to_dict
 from pytz import timezone
-
+import logging
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
         encoded_object = str(obj)
@@ -22,6 +22,10 @@ import math
 import traceback
 
 from django.db.models import Q
+
+
+logger = logging.getLogger('my')
+
 def sum_pk(pk_data):
     data = pk_data['fields']
     data['pk'] = pk_data['pk']
@@ -34,13 +38,18 @@ def sourcing_delect(request):
         "code": 200,
         "msg":"업로드 완료",
     }
-    admin_email = request.session['admin_email']
-    dt = json.loads(request.body.decode('utf-8'))
-    for one in Sourcing.objects.filter(id__in = [i['pk'] for i in dt],admin_email=admin_email):
-        try:
-            one.delete()
-        except:
-            pass
+    try:
+        admin_email = request.session['admin_email']
+        dt = json.loads(request.body.decode('utf-8'))
+        for one in Sourcing.objects.filter(id__in = [i['pk'] for i in dt],admin_email=admin_email):
+            try:
+                one.delete()
+            except:
+                pass
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
@@ -50,38 +59,42 @@ def sourcing_update(request):
         "code": 200,
         "msg":"업로드 완료",
     }
-    admin_email = request.session['admin_email']
-    dt = json.loads(request.body.decode('utf-8'))
-    
-    product_settings = dt['product_settings']
-    all_op_list = dt['all_op_list']
-    product_info = dt['product_info']
-    status = dt['status']
-    
-    sourcing_one = Sourcing.objects.get(id = product_info['pk'],admin_email=admin_email)
-    sourcing_one.org_title = product_info['org_title']
-    sourcing_one.tag = product_info['tag']
-    sourcing_one.change_thumbnail = product_info['change_thumbnail']    
-    sourcing_one.status = status
-    sourcing_one.save()
-    
-    one = Sourcing_Product.objects.get(id = product_settings['pk'])
-    one.margin = product_settings['margin']
-    one.isClothes = product_settings['isClothes']
-    one.isShoes = product_settings['isShoes']
-    one.weight = product_settings['weight']
-    one.weightPrice = product_settings['price']
-    one.memo = product_settings['memo']
-    one.save()
-    for op_list in all_op_list:
-        for op in op_list:
-            one_op = Sourcing_Option_Category.objects.get(id=op['pk'],sourcing_id=op['sourcing_id'])
-            one_op.ctg_korTypeName = op['ctg_korTypeName']
-            one_op.korTypeName = op['korTypeName']
-            one_op.image = op['image']
-            one_op.select = op['select']
-            one_op.save()
-    
+    try:
+        admin_email = request.session['admin_email']
+        dt = json.loads(request.body.decode('utf-8'))
+        
+        product_settings = dt['product_settings']
+        all_op_list = dt['all_op_list']
+        product_info = dt['product_info']
+        status = dt['status']
+        
+        sourcing_one = Sourcing.objects.get(id = product_info['pk'],admin_email=admin_email)
+        sourcing_one.org_title = product_info['org_title']
+        sourcing_one.tag = product_info['tag']
+        sourcing_one.change_thumbnail = product_info['change_thumbnail']    
+        sourcing_one.status = status
+        sourcing_one.save()
+        
+        one = Sourcing_Product.objects.get(id = product_settings['pk'])
+        one.margin = product_settings['margin']
+        one.isClothes = product_settings['isClothes']
+        one.isShoes = product_settings['isShoes']
+        one.weight = product_settings['weight']
+        one.weightPrice = product_settings['price']
+        one.memo = product_settings['memo']
+        one.save()
+        for op_list in all_op_list:
+            for op in op_list:
+                one_op = Sourcing_Option_Category.objects.get(id=op['pk'],sourcing_id=op['sourcing_id'])
+                one_op.ctg_korTypeName = op['ctg_korTypeName']
+                one_op.korTypeName = op['korTypeName']
+                one_op.image = op['image']
+                one_op.select = op['select']
+                one_op.save()
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
 
     
     
@@ -91,21 +104,24 @@ def sourcing_update(request):
 
 
 def sourcing_upload(request):
+    try:
+        dt = json.loads(request.body.decode('utf-8'))
+        email = request.session['email']
+        admin_email = request.session['admin_email']
+        #Sourcing.objects.create()
+        data = {
+            "code": 200,
+            "msg":"업로드 완료",
+            "data":None
+        }
+        
     
-    dt = json.loads(request.body.decode('utf-8'))
-    email = request.session['email']
-    admin_email = request.session['admin_email']
-    #Sourcing.objects.create()
-    data = {
-        "code": 200,
-        "msg":"업로드 완료",
-        "data":None
-    }
-    
-
-    Sourcing.objects.create(item_id='',org_title=dt['title'],constructor=email,manager=email,change_thumbnail=dt['sub_thumbnail'],status=0,
-                            date=datetime.now(timezone('Asia/Seoul')).replace(microsecond=0),cannel_id=dt['cannel_id'],product_id=dt['product_id'],admin_email=admin_email,tag='')
-
+        Sourcing.objects.create(item_id='',org_title=dt['title'],constructor=email,manager=email,change_thumbnail=dt['sub_thumbnail'],status=0,
+                                date=datetime.now(timezone('Asia/Seoul')).replace(microsecond=0),cannel_id=dt['cannel_id'],product_id=dt['product_id'],admin_email=admin_email,tag='')
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 def get_sourcing_data(one_sourcing):
@@ -119,34 +135,47 @@ def get_sourcing_data(one_sourcing):
     
 
 def sourcing_product_delete(request):
-    admin_email = request.session['admin_email']
-    dt = json.loads(request.body.decode('utf-8'))
-    pk = dt['pk']
-    for one_sourcing in Sourcing.objects.filter(id=pk,admin_email=admin_email):
-        [i.delete() for i in Sourcing_Product.objects.filter(sourcing_id=one_sourcing)]
-        [i.delete() for i in Sourcing_Option_Category.objects.filter(sourcing_id=one_sourcing)]
-        [i.delete() for i in Sourcing_Option_Deep_Category.objects.filter(sourcing_id=one_sourcing)]
-        [i.delete() for i in Main_Images.objects.filter(sourcing_id=one_sourcing)]
-        [i.delete() for i in Content_Images.objects.filter(sourcing_id=one_sourcing)]
-        one_sourcing.item_id = ''
     data = {
         "code": 200,
         "msg":"삭제 완료",
-    }    
+    }   
+    try:
+        admin_email = request.session['admin_email']
+        dt = json.loads(request.body.decode('utf-8'))
+        pk = dt['pk']
+        for one_sourcing in Sourcing.objects.filter(id=pk,admin_email=admin_email):
+            [i.delete() for i in Sourcing_Product.objects.filter(sourcing_id=one_sourcing)]
+            [i.delete() for i in Sourcing_Option_Category.objects.filter(sourcing_id=one_sourcing)]
+            [i.delete() for i in Sourcing_Option_Deep_Category.objects.filter(sourcing_id=one_sourcing)]
+            [i.delete() for i in Main_Images.objects.filter(sourcing_id=one_sourcing)]
+            [i.delete() for i in Content_Images.objects.filter(sourcing_id=one_sourcing)]
+            one_sourcing.item_id = ''
+ 
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
     return HttpResponse(json.dumps(data), content_type = "application/json")   
     
 def sourcing_product_confirm(request):
-    admin_email = request.session['admin_email']
-    dt = json.loads(request.body.decode('utf-8'))
-    pk_id = dt['pk']
-    one = Sourcing.objects.get(id=pk_id,admin_email=admin_email)
     data = {
         "code": 200,
         "msg":"업로드 완료",
         "data":None
     }
+    try:
+        admin_email = request.session['admin_email']
+        dt = json.loads(request.body.decode('utf-8'))
+        pk_id = dt['pk']
+        one = Sourcing.objects.get(id=pk_id,admin_email=admin_email)
 
-    data['data'] = get_sourcing_data(one)
+    
+        data['data'] = get_sourcing_data(one)
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
+    
     return HttpResponse(json.dumps(data), content_type = "application/json")   
 
 
@@ -174,6 +203,9 @@ def set_item_id(request):
             "code": 404,
             "msg":"업로드 실패",
         }
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
     return HttpResponse(json.dumps(data), content_type = "application/json")  
 
 def sourcing_product_upload(request):
@@ -245,8 +277,9 @@ def sourcing_product_upload(request):
             Sourcing_Option_Deep_Category.objects.create(sourcing_id=one, ids=ids, sale_price=sale_price, origin_price=origin_price, skuid=skuid, stock=stock)
     except:
         datat['code'] = 404
-        datat['msg'] = traceback.format_exc()
-        print(traceback.format_exc())
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
      
         
     return HttpResponse(json.dumps(datat), content_type = "application/json")   
@@ -392,98 +425,120 @@ def naver_page(request):
             "code": 200,
             "msg":traceback.format_exc(),
         }
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
 def problem_set(request):
-    admin_email = request.session['admin_email']
-    dt = json.loads(request.body.decode('utf-8'))
-    product_num=dt['all_id']
-    problem_list = Problem_Product.objects.filter(product_num=product_num,admin_email=admin_email)
-    if dt['problem_check']:
-        if not problem_list:
-            Problem_Product.objects.create(admin_email=admin_email, product_num=product_num)
-    else:
-        if problem_list:
-            problem_list.delete()
-    
     data = {
         "code": 200,
         "msg":"업로드 완료"
     }
+    try:
+        admin_email = request.session['admin_email']
+        dt = json.loads(request.body.decode('utf-8'))
+        product_num=dt['all_id']
+        problem_list = Problem_Product.objects.filter(product_num=product_num,admin_email=admin_email)
+        if dt['problem_check']:
+            if not problem_list:
+                Problem_Product.objects.create(admin_email=admin_email, product_num=product_num)
+        else:
+            if problem_list:
+                problem_list.delete()
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
+
     return HttpResponse(json.dumps(data), content_type = "application/json")    
 
 def sourcing_page(request):
-    admin_email = request.session['admin_email']
-    dt = json.loads(request.body.decode('utf-8'))
-    
-    date_s = dt['data']['date']['date_s']
-    date_e = dt['data']['date']['date_e']
-    constructor_email = dt['data']['constructor_email']
-    manager_email = dt['data']['manager_email']
-    status = dt['data']['status']
-    date_s = datetime.strptime(date_s, '%Y-%m-%d')
-    date_e = datetime.strptime(date_e, '%Y-%m-%d') + timedelta(days=1)
-    if constructor_email == 0 and manager_email == 0:
-        if status:
-            sourcing_page_list = Sourcing.objects.filter(status__in=status,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
-        else:
-            sourcing_page_list = Sourcing.objects.filter(admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
-    else:
-        if constructor_email != 0 and manager_email != 0:
-            if status:
-                sourcing_page_list = Sourcing.objects.filter(status__in=status,constructor=constructor_email,manager=manager_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
-            else:
-                sourcing_page_list = Sourcing.objects.filter(constructor=constructor_email,manager=manager_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
-        elif  constructor_email == 0:
-            if status:
-                sourcing_page_list = Sourcing.objects.filter(status__in=status,manager=manager_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
-            else:
-                sourcing_page_list = Sourcing.objects.filter(manager=manager_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
-        else:
-            if status:
-                sourcing_page_list = Sourcing.objects.filter(status__in=status,constructor=constructor_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
-            else:
-                sourcing_page_list = Sourcing.objects.filter(constructor=constructor_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
+    try:
+        admin_email = request.session['admin_email']
+        dt = json.loads(request.body.decode('utf-8'))
         
+        date_s = dt['data']['date']['date_s']
+        date_e = dt['data']['date']['date_e']
+        constructor_email = dt['data']['constructor_email']
+        manager_email = dt['data']['manager_email']
+        status = dt['data']['status']
+        date_s = datetime.strptime(date_s, '%Y-%m-%d')
+        date_e = datetime.strptime(date_e, '%Y-%m-%d') + timedelta(days=1)
+        if constructor_email == 0 and manager_email == 0:
+            if status:
+                sourcing_page_list = Sourcing.objects.filter(status__in=status,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
+            else:
+                sourcing_page_list = Sourcing.objects.filter(admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
+        else:
+            if constructor_email != 0 and manager_email != 0:
+                if status:
+                    sourcing_page_list = Sourcing.objects.filter(status__in=status,constructor=constructor_email,manager=manager_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
+                else:
+                    sourcing_page_list = Sourcing.objects.filter(constructor=constructor_email,manager=manager_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
+            elif  constructor_email == 0:
+                if status:
+                    sourcing_page_list = Sourcing.objects.filter(status__in=status,manager=manager_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
+                else:
+                    sourcing_page_list = Sourcing.objects.filter(manager=manager_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
+            else:
+                if status:
+                    sourcing_page_list = Sourcing.objects.filter(status__in=status,constructor=constructor_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
+                else:
+                    sourcing_page_list = Sourcing.objects.filter(constructor=constructor_email,admin_email=admin_email,date__range=[date_s, date_e]).order_by('-date')
+            
+            
         
-    
-    page = dt['page']
-    top = sourcing_page_list.count()
-    cut = 50
-    start = (cut*page)
-    end = start - cut
-    if page == 0:
-        naver_list = []
-    else:
-        naver_list = []
-        for i in json.loads(serializers.serialize("json", sourcing_page_list[end:start])):
-            one = i['fields']
-            one['pk'] = i['pk']
-            naver_list.append(one)
-    data = {
-        "code": 200,
-        "msg":"업로드 완료",
-        "data":{'list':naver_list,'count':top,'cut':cut,'page':page}
-    }
-    return HttpResponse(json.dumps(data), content_type = "application/json")
-
+        page = dt['page']
+        top = sourcing_page_list.count()
+        cut = 50
+        start = (cut*page)
+        end = start - cut
+        if page == 0:
+            naver_list = []
+        else:
+            naver_list = []
+            for i in json.loads(serializers.serialize("json", sourcing_page_list[end:start])):
+                one = i['fields']
+                one['pk'] = i['pk']
+                naver_list.append(one)
+        data = {
+            "code": 200,
+            "msg":"업로드 완료",
+            "data":{'list':naver_list,'count':top,'cut':cut,'page':page}
+        }
+        return HttpResponse(json.dumps(data), content_type = "application/json")
+    except:
+        data = {
+            "code": 200,
+            "msg":"업로드 완료",
+        }
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
+        return HttpResponse(json.dumps(data), content_type = "application/json")
 def manager_update(request):
-    dt = json.loads(request.body.decode('utf-8'))
-    admin_email = request.session['admin_email']
-    email = dt['email']
-    
-    pk_list = [i['pk'] for i in dt['pk_list']]
-    user = User_Info(email=email, admin_email=admin_email)
-    sourcing_list = Sourcing.objects.filter(id__in = pk_list,admin_email=admin_email)
-    for i in sourcing_list:
-        i.manager = email
-        i.save()
-    
     data = {
         "code": 200,
         "msg":"업로드 완료",
     }
+    try:
+        dt = json.loads(request.body.decode('utf-8'))
+        admin_email = request.session['admin_email']
+        email = dt['email']
+        
+        pk_list = [i['pk'] for i in dt['pk_list']]
+        user = User_Info(email=email, admin_email=admin_email)
+        sourcing_list = Sourcing.objects.filter(id__in = pk_list,admin_email=admin_email)
+        for i in sourcing_list:
+            i.manager = email
+            i.save()
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
+
     return HttpResponse(json.dumps(data), content_type = "application/json")    
 
 
@@ -493,8 +548,13 @@ def naver_all_delete(request):
         "code": 200,
         "msg": "삭제 완료"
     }
-    admin_email = request.session['admin_email']
-    Naver_Product.objects.filter(admin_email=admin_email).delete()
+    try:
+        admin_email = request.session['admin_email']
+        Naver_Product.objects.filter(admin_email=admin_email).delete()
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
     return HttpResponse(json.dumps(data), content_type = "application/json")
 def naver_all_upload(request):
     data = {
@@ -541,83 +601,104 @@ def naver_all_upload(request):
     except:
         data["code"] = 203
         data["msg"] = "로그인을 다시 시도해 주세요"
-        data["msg"] = traceback.format_exc()
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
 
 def setting_save(request):
-    dt = json.loads(request.body.decode('utf-8'))
-    if request.session['admin']:
-        admin_email = request.session['admin_email']
-        email = request.session['email']
-        key = dt['key']
-        tax = dt['tax']
-        margin = dt['margin']
-        if Secret_Key.objects.filter(admin_email=admin_email):
-            one = Secret_Key.objects.get(admin_email=admin_email)
-            one.key = key
-            one.save()
-        else:
-            Secret_Key.objects.create(admin_email=admin_email,key=key)
-        if User_Info.objects.filter(admin_email=admin_email,email=email):
-           one = User_Info.objects.get(admin_email=admin_email,email=email)
-           one.tax = tax
-           one.margin = margin
-           one.save()
-    
     data = {
         "code": 200,
         "msg":"업로드 완료"
     }    
+    try:
+        dt = json.loads(request.body.decode('utf-8'))
+        if request.session['admin']:
+            admin_email = request.session['admin_email']
+            email = request.session['email']
+            key = dt['key']
+            tax = dt['tax']
+            margin = dt['margin']
+            if Secret_Key.objects.filter(admin_email=admin_email):
+                one = Secret_Key.objects.get(admin_email=admin_email)
+                one.key = key
+                one.save()
+            else:
+                Secret_Key.objects.create(admin_email=admin_email,key=key)
+            if User_Info.objects.filter(admin_email=admin_email,email=email):
+               one = User_Info.objects.get(admin_email=admin_email,email=email)
+               one.tax = tax
+               one.margin = margin
+               one.save()
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
+
     
     return HttpResponse(json.dumps(data), content_type = "application/json")
     
 def prohibition(request):
-    admin_email = request.session['admin_email']
-    email = request.session['email']
-    dt = json.loads(request.body.decode('utf-8'))
-    if request.session['admin']:
-        keyword = dt['prohihition_keyword']
-        update = dt['update']
-        if type(keyword) == list:
-            pass
-        elif type(keyword) == str:
-            if update:
-                try:
-                    Prohibition.objects.get(admin_email=admin_email, keyword=keyword)
-                except:
-                    Prohibition.objects.create(email=email,admin_email=admin_email, keyword=keyword)
-            else:
-                try:
-                    Prohibition.objects.filter(admin_email=admin_email, keyword=keyword).delete()
-                except:
-                    pass
     data = {
         "code": 200,
         "msg":"업로드 완료"
     }
+    try:
+        admin_email = request.session['admin_email']
+        email = request.session['email']
+        dt = json.loads(request.body.decode('utf-8'))
+        if request.session['admin']:
+            keyword = dt['prohihition_keyword']
+            update = dt['update']
+            if type(keyword) == list:
+                pass
+            elif type(keyword) == str:
+                if update:
+                    try:
+                        Prohibition.objects.get(admin_email=admin_email, keyword=keyword)
+                    except:
+                        Prohibition.objects.create(email=email,admin_email=admin_email, keyword=keyword)
+                else:
+                    try:
+                        Prohibition.objects.filter(admin_email=admin_email, keyword=keyword).delete()
+                    except:
+                        pass
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
+
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
 def prohibition_list_get(request):
-    admin_email = request.session['admin_email']
-    
-    prohibition_list = []
-    
-    
-    for i in json.loads(serializers.serialize("json", Prohibition.objects.filter(admin_email=admin_email))):
-        one = i['fields']
-        one['pk'] = i['pk']
-        prohibition_list.append(one)
-    
     data = {
         "code": 200,
         "msg":"업로드 완료",
-        "data":prohibition_list
     }
-    return HttpResponse(json.dumps(data), content_type = "application/json")    
-    
-    
+    try:
+        admin_email = request.session['admin_email']
+        
+        prohibition_list = []
+        
+        
+        for i in json.loads(serializers.serialize("json", Prohibition.objects.filter(admin_email=admin_email))):
+            one = i['fields']
+            one['pk'] = i['pk']
+            prohibition_list.append(one)
+        
+        data = {
+            "code": 200,
+            "msg":"업로드 완료",
+            "data":prohibition_list
+        }
+        return HttpResponse(json.dumps(data), content_type = "application/json")    
+    except:
+        ero_msg = traceback.format_exc()
+        data['msg'] = ero_msg
+        logger.info(ero_msg)
+        return HttpResponse(json.dumps(data), content_type = "application/json")    
 
 def login(request):
     print(request.session.session_key)
@@ -849,6 +930,7 @@ def seller_up_load(request):
                     except:
                         ds[i["ctg_korTypeName"]] = []
                         ds[i["ctg_korTypeName"]].append(i)
+                        
             prop = get_prop(ds)
             existent_op_data = get_existent_op_data(sourcing_op_ctg,sourcing_op_deep_ctg,ds)
             options = get_options(sourcing_pr,existent_op_data,rate,tax)
