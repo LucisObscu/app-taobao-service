@@ -1033,7 +1033,7 @@ def get_option_data(request):
             weight = product.weight
             sourcing_pk = one.id
             title = one.org_title
-            option_list = serializers.serialize("json", Sourcing_Option_Category.objects.filter(sourcing_id=one))
+            option_list = json.loads(serializers.serialize("json", Sourcing_Option_Category.objects.filter(sourcing_id=one)))
             output.append({'pk':sourcing_pk,'title':title,'weight':weight,'options_list':option_list})
         except:
             pass
