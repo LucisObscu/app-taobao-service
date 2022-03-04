@@ -23,6 +23,7 @@ urlpatterns = [
     path('naver_all_delete',views.naver_all_delete,name="naver_all_delete"),
     path('activation',views.activation,name="activation"),
     path('set_item_id',views.set_item_id,name="set_item_id"),
-    
+    path('get_option_data',views.get_option_data,name="get_option_data"),
+    path('option_upload',views.option_upload,name="option_upload")
     
 ]

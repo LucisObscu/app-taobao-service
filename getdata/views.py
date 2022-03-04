@@ -154,7 +154,6 @@ def sourcing_product_delete(request):
             [i.delete() for i in Main_Images.objects.filter(sourcing_id=one_sourcing)]
             [i.delete() for i in Content_Images.objects.filter(sourcing_id=one_sourcing)]
             one_sourcing.item_id = ''
- 
     except:
         ero_msg = traceback.format_exc()
         data['msg'] = ero_msg
@@ -1020,7 +1019,53 @@ def activation(request):
         return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
+def get_option_data(request):
+    data = {
+        "code": 200,
+        "msg":"완료",
+    }
+    admin_email = request.session["admin_email"]
+    dt = json.loads(request.body.decode('utf-8'))
+    output = []
+    for one in Sourcing.objects.filter(id__in = [i['pk'] for i in dt],admin_email=admin_email):
+        try:
+            product = Sourcing_Product.objects.get(sourcing_id=one)
+            weight = product.weight
+            sourcing_pk = one.id
+            title = one.org_title
+            option_list = Sourcing_Option_Category.objects.filter(sourcing_id=one)
+            options = json.loads(serializers.serialize("json", option_list))
+            output.append({'pk':sourcing_pk,'title':title,'weight':weight,'options_list':option_list})
+        except:
+            pass
+    data['data'] = output
+    return HttpResponse(json.dumps(data), content_type = "application/json")
 
+
+def option_upload(request):
+    data = {
+        "code": 200,
+        "msg":"완료",
+    }
+    
+    dt = json.loads(request.body.decode('utf-8'))
+        
+    
+    return HttpResponse(json.dumps(data), content_type = "application/json")
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 

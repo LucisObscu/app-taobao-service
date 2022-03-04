@@ -21,6 +21,7 @@ class User_Info(models.Model):
     status = models.CharField(max_length=(50),default = '')
     jab = models.BooleanField(default = False)
     margin = models.IntegerField(default = 20)
+    
 class Prohibition(models.Model):
     email = models.CharField(max_length=(320))
     admin_email = models.CharField(max_length=(320))
@@ -74,6 +75,7 @@ class Sourcing_Product(models.Model):
     brand = models.CharField(max_length=(300))
     class Meta:
         db_table = 'sourcing_product'
+        
 class Sourcing_Option_Category(models.Model):
     sourcing_id = models.ForeignKey(Sourcing, on_delete=models.CASCADE)
     pid = models.CharField(max_length=(300))
