@@ -1042,12 +1042,40 @@ def get_option_data(request):
 
 
 def option_upload(request):
+    admin_email = request.session["admin_email"]
     data = {
         "code": 200,
         "msg":"완료",
     }
     
+    ero_list = []
     dt = json.loads(request.body.decode('utf-8'))
+    for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
+        sourcing_id = one.id
+        try:
+            sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=sourcing_id)
+            sourcing_one_input = dt[sourcing_id]
+            option_id = sourcing_one_input['option_id']
+            option_name = sourcing_one_input['option_name']
+            weight = sourcing_one_input['weight']
+            weight_price = sourcing_one_input['weight_price']
+            sourcing_product_one.weight = weight
+            sourcing_product_one.weightPrice = weight_price
+            sourcing_product_one.save()
+            for i in sourcing_one_input['deep_option']:
+                option_id = str(i['option_id'])
+                deep_option_id = str(i['deep_option_id'])
+                deep_option_name = str(i['deep_option_name'])
+                select = i['select']
+                optine_one = Sourcing_Option_Category.objects.get(sourcing_id=sourcing_id, pid=option_id,vid=deep_option_id)
+                optine_one.ctg_korTypeName = option_name
+                optine_one.korTypeName = deep_option_name
+                optine_one.select = select
+                optine_one.save()
+        except:
+            ero_list.append(sourcing_id)
+            
+    data['ero_list'] = ero_list
         
     
     return HttpResponse(json.dumps(data), content_type = "application/json")
