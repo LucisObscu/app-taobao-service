@@ -1049,6 +1049,7 @@ def option_upload(request):
     }
     
     ero_list = []
+    ero_msg = ''
     dt = json.loads(request.body.decode('utf-8'))
     for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
         sourcing_id = one.id
@@ -1074,8 +1075,10 @@ def option_upload(request):
                 optine_one.save()
         except:
             ero_list.append(sourcing_id)
+            ero_msg = traceback.format_exc()
             
     data['ero_list'] = ero_list
+    data['ero'] = ero_msg
         
     
     return HttpResponse(json.dumps(data), content_type = "application/json")
