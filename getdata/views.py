@@ -1050,19 +1050,17 @@ def option_upload(request):
     
     ero_msg = ''
     dt = json.loads(request.body.decode('utf-8'))
-    logger.info(dt)
     for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
         try:
             sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=one)
             sourcing_id = str(str(one.id).strip())
-            logger.info(type(sourcing_id))
             sourcing_one_input = dt[sourcing_id]
             option_id = sourcing_one_input['option_id']
             option_name = sourcing_one_input['option_name']
             weight = sourcing_one_input['weight']
             weight_price = sourcing_one_input['weight_price']
-            sourcing_product_one.weight = weight
-            sourcing_product_one.weightPrice = weight_price
+            sourcing_product_one.weight = int(weight)
+            sourcing_product_one.weightPrice = int(weight_price)
             sourcing_product_one.save()
             for i in sourcing_one_input['deep_option'].keys():
                 deep_option_id = i
