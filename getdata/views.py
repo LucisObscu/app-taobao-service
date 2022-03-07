@@ -1052,9 +1052,9 @@ def option_upload(request):
     ero_msg = ''
     dt = json.loads(request.body.decode('utf-8'))
     for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
-        sourcing_id = one.id
         try:
-            sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=sourcing_id)
+            sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=one)
+            sourcing_id = sourcing_product_one.sourcing_id
             sourcing_one_input = dt[sourcing_id]
             option_id = sourcing_one_input['option_id']
             option_name = sourcing_one_input['option_name']
