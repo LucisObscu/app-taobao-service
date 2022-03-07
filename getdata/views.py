@@ -1053,7 +1053,7 @@ def option_upload(request):
     for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
         try:
             sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=one)
-            sourcing_id = int(one.id)
+            sourcing_id = int(str(one.id).strip())
             sourcing_one_input = dt[sourcing_id]
             option_id = sourcing_one_input['option_id']
             option_name = sourcing_one_input['option_name']
@@ -1067,7 +1067,7 @@ def option_upload(request):
                 deep_option_id = str(i['deep_option_id'])
                 deep_option_name = str(i['deep_option_name'])
                 select = i['select']
-                optine_one = Sourcing_Option_Category.objects.get(sourcing_id=sourcing_id, pid=option_id,vid=deep_option_id)
+                optine_one = Sourcing_Option_Category.objects.get(sourcing_id=one, pid=option_id,vid=deep_option_id)
                 optine_one.ctg_korTypeName = option_name
                 optine_one.korTypeName = deep_option_name
                 optine_one.select = select
