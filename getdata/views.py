@@ -1048,7 +1048,6 @@ def option_upload(request):
         "msg":"완료",
     }
     
-    ero_list = []
     ero_msg = ''
     dt = json.loads(request.body.decode('utf-8'))
     for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
@@ -1074,10 +1073,8 @@ def option_upload(request):
                 optine_one.select = select
                 optine_one.save()
         except:
-            ero_list.append(sourcing_id)
             ero_msg = traceback.format_exc()
             
-    data['ero_list'] = ero_list
     data['ero'] = ero_msg
         
     
