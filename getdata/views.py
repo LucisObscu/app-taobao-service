@@ -1053,7 +1053,7 @@ def option_upload(request):
     for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
         try:
             sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=one)
-            sourcing_id = sourcing_product_one.sourcing_id
+            sourcing_id = int(sourcing_product_one.sourcing_id)
             sourcing_one_input = dt[sourcing_id]
             option_id = sourcing_one_input['option_id']
             option_name = sourcing_one_input['option_name']
