@@ -1065,7 +1065,6 @@ def option_upload(request):
             sourcing_product_one.weightPrice = weight_price
             sourcing_product_one.save()
             for i in sourcing_one_input['deep_option']:
-                option_id = str(i['option_id'])
                 deep_option_id = str(i['deep_option_id'])
                 deep_option_name = str(i['deep_option_name'])
                 select = i['select']
