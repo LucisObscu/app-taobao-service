@@ -1072,6 +1072,10 @@ def option_upload(request):
                 optine_one.select = select
                 optine_one.save()
         except:
+            logger.info(option_id)
+            logger.info(type(option_id))
+            logger.info(deep_option_id)
+            logger.info(type(deep_option_id))
             ero_msg = traceback.format_exc()
             
     data['ero'] = ero_msg
