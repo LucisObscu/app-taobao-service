@@ -1062,7 +1062,7 @@ def option_upload(request):
             sourcing_product_one.weightPrice = int(weight_price)
             sourcing_product_one.save()
             
-            for key, val in sourcing_one_input['option_id'].items():
+            for key, val in sourcing_one_input['option'].items():
                 option_id = key
                 option_name = val['option_name']
                 for key1,val1 in val['deep_option'].items():
