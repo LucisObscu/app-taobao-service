@@ -1055,27 +1055,27 @@ def option_upload(request):
             sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=one)
             sourcing_id = str(str(one.id).strip())
             sourcing_one_input = dt[sourcing_id]
-            option_id = sourcing_one_input['option_id']
-            option_name = sourcing_one_input['option_name']
+            
             weight = sourcing_one_input['weight']
             weight_price = sourcing_one_input['weight_price']
             sourcing_product_one.weight = int(weight)
             sourcing_product_one.weightPrice = int(weight_price)
             sourcing_product_one.save()
-            for i in sourcing_one_input['deep_option'].keys():
-                deep_option_id = i
-                deep_option_name = str(sourcing_one_input['deep_option'][i]['deep_option_name'])
-                select = sourcing_one_input['deep_option'][i]['select']
-                optine_one = Sourcing_Option_Category.objects.get(sourcing_id=one, pid=option_id,vid=deep_option_id)
-                optine_one.ctg_korTypeName = option_name
-                optine_one.korTypeName = deep_option_name
-                optine_one.select = select
-                optine_one.save()
+            
+            for key, val in sourcing_one_input['option_id'].items():
+                option_id = key
+                option_name = val['option_name']
+                for key1,val1 in val['deep_option'].items():
+                    deep_option_id = key1
+                    deep_option_name = val1['deep_option_name']
+                    select = val1['select']
+                    optine_one = Sourcing_Option_Category.objects.get(sourcing_id=one, pid=option_id,vid=deep_option_id)
+                    optine_one.ctg_korTypeName = option_name
+                    optine_one.korTypeName = deep_option_name
+                    optine_one.select = select
+                    optine_one.save()            
+
         except:
-            logger.info(option_id)
-            logger.info(type(option_id))
-            logger.info(deep_option_id)
-            logger.info(type(deep_option_id))
             ero_msg = traceback.format_exc()
             
     data['ero'] = ero_msg
