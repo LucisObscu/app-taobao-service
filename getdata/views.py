@@ -1056,6 +1056,10 @@ def option_upload(request):
             sourcing_id = str(str(one.id).strip())
             sourcing_one_input = dt[sourcing_id]
             
+            status = sourcing_one_input['status']
+            one.status = int(status)
+            one.save()
+            
             weight = sourcing_one_input['weight']
             weight_price = sourcing_one_input['weight_price']
             sourcing_product_one.weight = int(weight)
