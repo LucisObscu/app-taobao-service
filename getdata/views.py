@@ -1029,12 +1029,13 @@ def get_option_data(request):
     output = []
     for one in Sourcing.objects.filter(id__in = [i['pk'] for i in dt],admin_email=admin_email):
         try:
+            status = one.status
             product = Sourcing_Product.objects.get(sourcing_id=one)
             weight = product.weight
             sourcing_pk = one.id
             title = one.org_title
             option_list = [i['fields'] for i in json.loads(serializers.serialize("json", Sourcing_Option_Category.objects.filter(sourcing_id=one)))]
-            output.append({'pk':sourcing_pk,'title':title,'weight':weight,'options_list':option_list})
+            output.append({'pk':sourcing_pk,'title':title,'status':status,'weight':weight,'options_list':option_list})
         except:
             pass
     data['data'] = output
