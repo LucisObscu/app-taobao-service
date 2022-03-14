@@ -1027,7 +1027,7 @@ def get_option_data(request):
     admin_email = request.session["admin_email"]
     dt = json.loads(request.body.decode('utf-8'))
     output = []
-    for one in Sourcing.objects.filter(id__in = [i['pk'] for i in dt],admin_email=admin_email):
+    for one in Sourcing.objects.filter(id__in = [i['pk'] for i in dt],status__in = [0,1], admin_email=admin_email):
         try:
             status = one.status
             product = Sourcing_Product.objects.get(sourcing_id=one)
