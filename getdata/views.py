@@ -1096,8 +1096,8 @@ def option_upload(request):
     
             except:
                 ero_msg = traceback.format_exc()
-        Sourcing.objects.objects.bulk_update(one_list, ['status'])
-        Sourcing_Product.objects.objects.bulk_update(sourcing_product_one_list, ['weight','weight_price'])
+        Sourcing.objects.bulk_update(one_list, ['status'])
+        Sourcing_Product.objects.bulk_update(sourcing_product_one_list, ['weight','weight_price'])
         Sourcing_Option_Category.objects.bulk_update(optine_one_list, ['ctg_korTypeName','korTypeName','select'])
     except:
         ero_msg = traceback.format_exc()
