@@ -1045,45 +1045,50 @@ def get_option_data(request):
 
 
 def option_upload(request):
-    admin_email = request.session["admin_email"]
     data = {
         "code": 200,
         "msg":"완료",
     }
-    
     ero_msg = ''
-    dt = json.loads(request.body.decode('utf-8'))
-    for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
-        try:
-            sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=one)
-            sourcing_id = str(str(one.id).strip())
-            sourcing_one_input = dt[sourcing_id]
-            
-            status = sourcing_one_input['status']
-            one.status = int(status)
-            one.save()
-            
-            weight = sourcing_one_input['weight']
-            weight_price = sourcing_one_input['weight_price']
-            sourcing_product_one.weight = int(weight)
-            sourcing_product_one.weightPrice = int(weight_price)
-            sourcing_product_one.save()
-            
-            for key, val in sourcing_one_input['option'].items():
-                option_id = key
-                option_name = val['option_name']
-                for key1,val1 in val['deep_option'].items():
-                    deep_option_id = key1
-                    deep_option_name = val1['deep_option_name']
-                    select = val1['select']
-                    optine_one = Sourcing_Option_Category.objects.get(sourcing_id=one, pid=option_id,vid=deep_option_id)
-                    optine_one.ctg_korTypeName = option_name
-                    optine_one.korTypeName = deep_option_name
-                    optine_one.select = select
-                    optine_one.save()            
-
-        except:
-            ero_msg = traceback.format_exc()
+    try:
+        admin_email = request.session["admin_email"]
+    
+        
+        
+        dt = json.loads(request.body.decode('utf-8'))
+        for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
+            try:
+                sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=one)
+                sourcing_id = str(str(one.id).strip())
+                sourcing_one_input = dt[sourcing_id]
+                
+                status = sourcing_one_input['status']
+                one.status = int(status)
+                #one.save()
+                
+                weight = sourcing_one_input['weight']
+                weight_price = sourcing_one_input['weight_price']
+                sourcing_product_one.weight = int(weight)
+                sourcing_product_one.weightPrice = int(weight_price)
+                #sourcing_product_one.save()
+                
+                for key, val in sourcing_one_input['option'].items():
+                    option_id = key
+                    option_name = val['option_name']
+                    for key1,val1 in val['deep_option'].items():
+                        deep_option_id = key1
+                        deep_option_name = val1['deep_option_name']
+                        select = val1['select']
+                        optine_one = Sourcing_Option_Category.objects.get(sourcing_id=one, pid=option_id,vid=deep_option_id)
+                        optine_one.ctg_korTypeName = option_name
+                        optine_one.korTypeName = deep_option_name
+                        optine_one.select = select
+                        #optine_one.save()            
+    
+            except:
+                ero_msg = traceback.format_exc()
+    except:
+        ero_msg = traceback.format_exc()
             
     data['ero'] = ero_msg
         
