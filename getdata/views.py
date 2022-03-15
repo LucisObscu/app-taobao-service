@@ -733,10 +733,11 @@ def login(request):
                 request.session['nickname'] = nickname
                 request.session['admin_email'] = email
                 request.session['admin'] = True
+                info = None
                 try:
                     info = User_Info.objects.get(email=email,admin=True,admin_email=email)
                 except:
-                    info = None
+                    pass
                     
                 m_data = 'email={0}'.format(email)
                 m_req = requests.get('https://tsnullp.herokuapp.com/seller/getStaff?'+m_data)
@@ -751,7 +752,10 @@ def login(request):
                         for user in m_text['data']:
                             u_email = user['email']
                             u_nickname = user['nickname']
-                            User_Info.objects.create(email=u_email, nickname=u_nickname,admin=False,admin_email=email)
+                            try:
+                                User_Info.objects.get(email=u_email,admin=False,admin_email=email)
+                            except:
+                                User_Info.objects.create(email=u_email, nickname=u_nickname,admin=False,admin_email=email)
                     text['message'] = '로그인 성공'
                     text['user_list'] = serializers.serialize("json", User_Info.objects.filter(admin_email=email))
                     text['setting'] = model_to_dict(User_Info.objects.get(email=email))
@@ -784,7 +788,10 @@ def login(request):
                                 u_nickname = user['nickname']
                                 if u_email not in m_email_list:
                                     print('새로 작원 계정 등록')
-                                    User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False)
+                                    try:
+                                        User_Info.objects.get(email=u_email,admin=False,admin_email=email)
+                                    except:
+                                        User_Info.objects.create(email=u_email, nickname=u_nickname,admin_email=email,admin=False)
                         text['message'] = '로그인 성고'
                         text['user_list'] = serializers.serialize("json", User_Info.objects.filter(admin_email=m_email))
                         text['setting'] = model_to_dict(User_Info.objects.get(email=m_email))
