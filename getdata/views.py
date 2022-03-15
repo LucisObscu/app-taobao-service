@@ -1013,17 +1013,12 @@ def seller_up_load(request):
     
 def activation(request):
     logger.info('activation')
+    admin_email = request.session["admin_email"]
     data = {
         "code": 200,
         "msg":"활성화 완료",
     }
-    
-    try:
-        Prohibition.objects.create(email='test', admin_email='test', keyword='test')
-        return HttpResponse(json.dumps(data), content_type = "application/json")
-    except:
-        data["msg"] = traceback.format_exc()
-        return HttpResponse(json.dumps(data), content_type = "application/json")
+    return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
 def get_option_data(request):

@@ -28,6 +28,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
+SESSION_COOKIE_AGE = 86400
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Application definition
 
