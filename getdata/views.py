@@ -1056,6 +1056,10 @@ def option_upload(request):
         
         
         dt = json.loads(request.body.decode('utf-8'))
+        
+        one_list = []
+        sourcing_product_one_list = []
+        optine_one_list = []
         for one in Sourcing.objects.filter(id__in = list(dt.keys()),admin_email=admin_email):
             try:
                 sourcing_product_one = Sourcing_Product.objects.get(sourcing_id=one)
@@ -1064,12 +1068,15 @@ def option_upload(request):
                 
                 status = sourcing_one_input['status']
                 one.status = int(status)
+                one_list.append(one)
                 #one.save()
                 
                 weight = sourcing_one_input['weight']
                 weight_price = sourcing_one_input['weight_price']
                 sourcing_product_one.weight = int(weight)
                 sourcing_product_one.weightPrice = int(weight_price)
+                sourcing_product_one_list.append(sourcing_product_one)
+                
                 #sourcing_product_one.save()
                 
                 for key, val in sourcing_one_input['option'].items():
@@ -1083,10 +1090,15 @@ def option_upload(request):
                         optine_one.ctg_korTypeName = option_name
                         optine_one.korTypeName = deep_option_name
                         optine_one.select = select
-                        #optine_one.save()            
+                        optine_one_list.append(optine_one)
+                        #optine_one.save()
+                    
     
             except:
                 ero_msg = traceback.format_exc()
+        Sourcing.objects.objects.bulk_update(one_list, ['status'])
+        Sourcing_Product.objects.objects.bulk_update(sourcing_product_one_list, ['weight','weight_price'])
+        Sourcing_Option_Category.objects.bulk_update(optine_one_list, ['ctg_korTypeName','korTypeName','select'])
     except:
         ero_msg = traceback.format_exc()
             
