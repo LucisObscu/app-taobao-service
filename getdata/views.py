@@ -865,10 +865,11 @@ def get_options(sourcing_pr,existent_op_data,rate,tax):
         
         option["margin"] = sourcing_pr["margin"]
         option["weightPrice"] = sourcing_pr["weightPrice"]
-        option["productPrice"] = math.ceil(math.ceil((((rate*float(deep_op["origin_price"]))/((100-sourcing_pr["margin"])*0.01))*tax)+sourcing_pr["weightPrice"])*0.1)*10
+        #option["productPrice"] = math.ceil(math.ceil((((rate*float(deep_op["origin_price"]))/((100-sourcing_pr["margin"])*0.01))*tax)+sourcing_pr["weightPrice"])*0.1)*10
+        option["productPrice"] = math.ceil(math.ceil(((((rate*float(deep_op["origin_price"]))+sourcing_pr["weightPrice"])/((100-sourcing_pr["margin"])*0.01))*tax))*0.1)*10
         sale_price = float(deep_op["sale_price"])
-        option["salePrice"] =  math.ceil(math.ceil((((rate*sale_price)/((100-sourcing_pr["margin"])*0.01))*tax)+sourcing_pr["weightPrice"])*0.1)*10
-        
+        #option["salePrice"] =  math.ceil(math.ceil((((rate*sale_price)/((100-sourcing_pr["margin"])*0.01))*tax)+sourcing_pr["weightPrice"])*0.1)*10
+        option["salePrice"] =  math.ceil(math.ceil(((((rate*sale_price)+sourcing_pr["weightPrice"])/((100-sourcing_pr["margin"])*0.01))*tax))*0.1)*10
         
         options.append(option)
     return options
