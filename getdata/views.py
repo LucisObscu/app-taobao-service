@@ -323,7 +323,9 @@ def naver_page(request):
         one_user_info.status = ','.join(status)
         one_user_info.save()
         
-        
+        logger.info('입력한 데이터 ================================================')
+        logger.info(option)
+        logger.info('입력한 데이터 ================================================')
         
         cannel_product_id_list = ['{0}-{1}'.format(j.cannel_id, j.product_id) for j in Sourcing.objects.filter(admin_email=admin_email,status__in=[int(i) for i in status])]
         
@@ -369,7 +371,7 @@ def naver_page(request):
                                                          review__gte=review_s,review__lte=review_e,
                                                          price_sum_delivery__gte=price_min,price_sum_delivery__lte=price_max,
                                                          date__gte=d_day,three_day=three_day).order_by('-{0}'.format(sort_word))                       
-        
+
         
         
         top = len(naver_product_list)
@@ -377,12 +379,12 @@ def naver_page(request):
         start = (cut*page)
         end = start - cut
         
-        print('=================================================')
-        print('naver_product_list : {0}'.format(len(naver_product_list)))
+        logger.info('=================================================')
+        logger.info('naver_product_list : {0}'.format(len(naver_product_list)))
         naver_product_list = naver_product_list[end:start]
-        print(start)
-        print(end)
-        print('ddddnaver_product_list : {0}'.format(len(naver_product_list)))
+        logger.info(start)
+        logger.info(end)
+        logger.info('ddddnaver_product_list : {0}'.format(len(naver_product_list)))
         
         cut_naver_product_list = []
         sourcing_status_list = []
@@ -577,6 +579,8 @@ def naver_all_upload(request):
             'six_mon', 'review', 'review_score']
     try:
         dt = json.loads(request.body.decode('utf-8'))
+
+        
         if dt != []:
             if not set(lst2).difference(list(dt[0].keys())):
                 admin = request.session['admin']
