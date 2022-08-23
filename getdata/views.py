@@ -406,10 +406,10 @@ def naver_page(request):
                         
                         
                         
-        print('cut_naver_product_list : {0}'.format(len(cut_naver_product_list)))
-        print('sourcing_status_list : {0}'.format(len(sourcing_status_list)))
-        print('problem_product_list : {0}'.format(len(problem_product_list)))
-        print('=================================================')
+        logger.info('cut_naver_product_list : {0}'.format(len(cut_naver_product_list)))
+        logger.info('sourcing_status_list : {0}'.format(len(sourcing_status_list)))
+        logger.info('problem_product_list : {0}'.format(len(problem_product_list)))
+        logger.info('=================================================')
         if page == 0:
             naver_list = []
         else:
